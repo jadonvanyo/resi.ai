@@ -1,0 +1,12 @@
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for brand */
+nav .navbar-brand .white
+{
+    color: #fff;
+    font-family: 'leckerli one'
+}
