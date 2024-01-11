@@ -4,9 +4,55 @@ nav .navbar-brand
     font-size: xx-large;
 }
 
-/* Colors for brand */
-nav .navbar-brand .white
+/* Add padding to the navbar */
+.navbar
 {
-    color: #fff;
-    font-family: 'leckerli one'
+    border-bottom: 1px solid #ccc;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+/* Adjust the logo image in the navbar */
+.navbar-brand img 
+{
+    border-radius: 5px;
+    height: 2.5rem;
+    width: auto; 
+}
+
+/* Set the background color */
+body
+{
+    background-color: #212529;
+}
+
+/* Adjsut text color */
+h1, p
+{
+    color: #ccc;
+}
+
+.form-signin 
+{
+    max-width: 330px;
+    padding: 1rem;
+}
+  
+.form-signin .form-floating:focus-within 
+{
+    z-index: 2;
+}
+  
+.form-signin input[type="email"] 
+{
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+  
+.form-signin input[type="password"] 
+{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
