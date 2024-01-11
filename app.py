@@ -46,24 +46,24 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 403)
+        # Ensure email was submitted
+        if not request.form.get("email"):
+            return apology("must provide email", 403)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
 
-        # Query database for username
+        # Query database for email
         rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
+            "SELECT * FROM users WHERE email = ?", request.form.get("email")
         )
 
-        # Ensure username exists and password is correct
+        # Ensure email exists and password is correct
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            return apology("invalid username and/or password", 403)
+            return apology("invalid email and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -92,9 +92,9 @@ def register():
     """Register user"""
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 400)
+        # Ensure email was submitted
+        if not request.form.get("email"):
+            return apology("must provide email", 400)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
@@ -108,13 +108,13 @@ def register():
         elif request.form.get("confirmation") != request.form.get("password"):
             return apology("passwords must match", 400)
 
-        # Query database to see if the username already exists
-        elif db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username")):
-            return apology("username already taken", 400)
+        # Query database to see if the email already exists
+        elif db.execute("SELECT * FROM users WHERE email = ?", request.form.get("email")):
+            return apology("email already taken", 400)
 
         # Insert new user into the database and remember which user has logged in
-        session["user_id"] = db.execute("INSERT INTO users (username, hash) VALUES(?, ?);", request.form.get(
-            "username"), generate_password_hash(request.form.get("password")))
+        session["user_id"] = db.execute("INSERT INTO users (email, hash) VALUES(?, ?);", request.form.get(
+            "email"), generate_password_hash(request.form.get("password")))
 
         # TODO: Delete this
         # Remember which user has logged in
@@ -126,4 +126,6 @@ def register():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
+    
+# CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, api_key TEXT;
     
