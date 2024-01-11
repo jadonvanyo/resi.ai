@@ -58,7 +58,17 @@ h1, p
     border-bottom-left-radius: 0;
 }
 
-.form-signin input[type="password"]
+/* Adjust the middle element to be rounded for any forms */
+.form-floating .middle-element
+{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* Adjust the bottom element to be rounded for any forms */
+.form-floating .bottom-element
 {
     margin-bottom: 10px;
     border-top-left-radius: 0;
