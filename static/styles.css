@@ -87,11 +87,22 @@ h1, p
     background-color: #2b3035;
 }
 
+/* Custom styling for any areas with text */
+.text-area
+{
+    width: 60%;
+}
+
 /* Media query for mobile devices */
 @media (max-width: 768px) {
     .container .centered-image
     {
         height: 6rem;
         width: auto;
+    }
+
+    .text-area
+    {
+        width: 90%;
     }
 }

@@ -37,6 +37,10 @@ def index():
     return apology("TODO", 400)
 
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -126,6 +130,4 @@ def register():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
-    
-# CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email TEXT NOT NULL, hash TEXT NOT NULL, api_key TEXT;
     
