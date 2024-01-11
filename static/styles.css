@@ -13,18 +13,18 @@ nav .navbar-brand
 }
 
 /* Adjust the logo image in the navbar */
-.navbar-brand img 
+.navbar-brand img
 {
     border-radius: 5px;
     height: 2.5rem;
-    width: auto; 
+    width: auto;
 }
 
 /* Set the background color */
-body
+/* body
 {
-    background-color: #212529;
-}
+    background-color: #2b3035;
+} */
 
 /* Adjsut text color */
 h1, p
@@ -32,27 +32,56 @@ h1, p
     color: #ccc;
 }
 
-.form-signin 
+/* Adjust form */
+.form-signin
 {
     max-width: 330px;
     padding: 1rem;
 }
-  
-.form-signin .form-floating:focus-within 
+
+/* Adjust image size */
+.container .centered-image
+{
+    height: 8rem;
+    width: auto;
+}
+
+.form-signin .form-floating:focus-within
 {
     z-index: 2;
 }
-  
-.form-signin input[type="email"] 
+
+.form-signin input[type="email"]
 {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
-  
-.form-signin input[type="password"] 
+
+.form-signin input[type="password"]
 {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+/* Adjust the input fields background color */
+.form-control
+{
+    background-color: #2b3035;
+}
+
+/* Adjust the input backgorund color when clicked on */
+.form-control:focus
+{
+    background-color: #2b3035;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .container .centered-image
+    {
+        height: 6rem;
+        width: auto;
+    }
 }
