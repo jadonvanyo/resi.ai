@@ -41,6 +41,16 @@ def index():
 def about():
     return render_template("about.html")
 
+@app.route("/api_key", methods=["GET", "POST"])
+@login_required
+def api_key():
+    """Allow users to set up their API Key"""
+    if request.method == "POST":
+        return apology("TODO", 400)
+    
+    else:
+        return render_template("api_key.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -117,15 +127,15 @@ def register():
             return apology("email already taken", 400)
 
         # Insert new user into the database and remember which user has logged in
-        session["user_id"] = db.execute("INSERT INTO users (email, hash) VALUES(?, ?);", request.form.get(
-            "email"), generate_password_hash(request.form.get("password")))
+        session["user_id"] = db.execute("INSERT INTO users (email, hash) VALUES(?, ?);", 
+            request.form.get("email"), generate_password_hash(request.form.get("password")))
 
         # TODO: Delete this
         # Remember which user has logged in
         # session["user_id"] = id
 
-        # Redirect to the homepage
-        return redirect("/")
+        # Redirect to the API key page
+        return redirect("/api_key")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
