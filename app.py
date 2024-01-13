@@ -46,7 +46,15 @@ def about():
 def api_key():
     """Allow users to set up their API Key"""
     if request.method == "POST":
-        return apology("TODO", 400)
+        # Ensure API Key was submitted
+        if not request.form.get("api_key"):
+            return apology("must provide API Key", 400)
+        # Update the users API key in the users database
+        db.execute(
+            "UPDATE users SET api_key = ? WHERE id = ?;",
+            request.form.get("api_key"), session["user_id"]
+        )
+        
     
     else:
         return render_template("api_key.html")

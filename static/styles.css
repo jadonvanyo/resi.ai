@@ -93,6 +93,12 @@ h1, p
     width: 60%;
 }
 
+/* Set the width and center the input box */
+.form-container {
+    width: 300px;
+    margin: 0 auto;
+}
+
 /* Media query for mobile devices */
 @media (max-width: 768px) {
     .container .centered-image

@@ -9,6 +9,16 @@
         <p>
             <!-- TODO: Create a walktrough of how to get their API Key -->
         </p>
-        <!-- TODO: Create an enter API Key button to allow users to POST and change their API Key from this page -->
     </div>
+
+    <form action="/api_key" method="post">
+        <div class="form-container">
+            <div class="form-floating mb-3">
+                <!-- TODO: Create an enter API Key button to allow users to POST and change their API Key from this page -->
+                <input type="password" class="form-control" id="floatingAPI" placeholder="API Key" name="api_key">
+                <label for="floatingAPI">API Key</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Enter API Key</button>
+    </form>
 {% endblock %}
