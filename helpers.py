@@ -1,5 +1,23 @@
+import openai
 from flask import redirect, render_template, session
+import requests
 from functools import wraps
+
+def api_key_validation(user_api_key):
+    openai.api_key = user_api_key
+    try:
+        response = openai.Completion.create(
+            engine="gpt-3.5-turbo",
+            prompt="This is a test.",
+            max_tokens=5
+        )
+    except:
+        return False
+    else:
+        return True
+    
+    # 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
+        
 
 def apology(message, code=400):
     """Render message as an apology to user."""
