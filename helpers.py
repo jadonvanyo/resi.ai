@@ -15,8 +15,6 @@ def api_key_validation(user_api_key):
         return False
     else:
         return True
-    
-    # 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
         
 
 def apology(message, code=400):
