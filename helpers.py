@@ -4,12 +4,19 @@ import requests
 from functools import wraps
 
 def api_key_validation(user_api_key):
-    openai.api_key = user_api_key
+    # Enter the users entered API key to into an open api
+    openai.api_key = f"{user_api_key}"
     try:
-        response = openai.Completion.create(
-            engine="gpt-3.5-turbo",
-            prompt="This is a test.",
-            max_tokens=5
+        completion = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "user",
+                    "content": "This is a test. Please respond with 'This is a test.'",
+                },
+            ],
+            max_tokens=5,
+            temperature=0,
         )
     except:
         return False
