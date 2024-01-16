@@ -6,7 +6,7 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, login_required, usd
+from helpers import api_key_validation, apology, get_fernet_instance, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -54,6 +54,17 @@ def api_key():
         # Validate user's API Key        
         if not api_key_validation(request.form.get("user_api_key")):
             return apology("must provide a valid API Key", 400)
+        
+        # Generate fernet instance to encrypt the user's secret key
+        # fernet_instance = get_fernet_instance(secret_key)
+        
+        # Open the file containing the secret keys
+        # TODO: Create your own secret key and update the file path to the file with the secret key
+        with open('/Users/jadonvanyo/Desktop/cs50/final_project/secret_keys/secret_key.txt', 'r') as file:
+            # Read the content of the file
+            content = file.read()
+
+        print(content)
         
         # Update the users API key in the users database
         db.execute(

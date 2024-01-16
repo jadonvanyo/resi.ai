@@ -1,9 +1,10 @@
+from cryptography.fernet import Fernet
 import openai
 from flask import redirect, render_template, session
-import requests
 from functools import wraps
 
 def api_key_validation(user_api_key):
+    """Check whether a user entered a valid OpenAI API key"""
     # Enter the users entered API key to into an open api
     openai.api_key = f"{user_api_key}"
     
@@ -52,6 +53,18 @@ def apology(message, code=400):
         return s
 
     return render_template("apology.html", top=code, bottom=escape(message)), code
+
+def decrypt_key(encrypted_key, fernet_instance):
+    """Decrypt a user's API key"""
+    return fernet_instance.decrypt(encrypted_key).decode()
+
+def encrypt_key(key, fernet_instance):
+    """Encrypt a user's key prior to storage"""
+    return fernet_instance.encrypt(key.encode())
+
+def get_fernet_instance(secret_key):
+    """Initialize Fernet using a secret key"""
+    return Fernet(secret_key)
 
 def login_required(f):
     """
