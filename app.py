@@ -1,5 +1,6 @@
 import os
 
+import openai
 from cs50 import SQL
 import datetime
 from flask import Flask, redirect, render_template, request, session
@@ -31,12 +32,95 @@ def after_request(response):
     return response
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    """Show the previously submitted resumes"""
-    return render_template("index.html")
+    """Main feature to tailor the user's resume"""
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure the user entered a job title
+        if not request.form.get("jobtitle"):
+            return apology("missing target job title", 400)
 
+        # Ensure that the user entered an industry
+        elif not request.form.get("industry"):
+            return apology("missing target industry", 400)
+        
+        # Ensure that the user entered a company
+        elif not request.form.get("company"):
+            return apology("missing target company", 400)
+        
+        # Ensure that the user entered their current/previous job
+        elif not request.form.get("prevjob"):
+            return apology("missing current/previous job", 400)
+        
+        # Ensure that the user entered a job description
+        elif not request.form.get("jobdescription"):
+            return apology("missing job description", 400)
+        
+        # Ensure that the user entered a resume or selected to use their saved resume
+        elif not request.form.get("resume") and not request.form.get("savedresume"):
+            return apology("missing resume", 400)
+        
+        # Ensure the user has not entered a resume and selected to use a saved resume
+        elif request.form.get("resume") and request.form.get("savedresume"):
+            return apology("cannot use 2 resumes at once", 400)
+        
+        # Ensure the user has a resume saved if they selected to use a saved resume and did not enter a resume
+        elif not request.form.get("resume") and request.form.get("savedresume"):
+            # SELECT the user's resume from users
+            resume = db.execute(
+                "SELECT resume FROM users WHERE id = ?;", session["user_id"]
+            )
+            # Ensure the user has a resume saved in users
+            if not resume:
+                return apology("no saved resume", 400)
+        
+        # Store resume if the user entered a resume
+        elif request.form.get("resume") and not request.form.get("savedresume"):
+            resume = request.form.get("resume")
+        
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = db.execute(
+                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        )
+        
+        # Ensure the user has entered an API key
+        if not encrypted_api_key:
+            return apology("no saved api key", 400)
+        
+        # TODO: Check that the user entered a sufficiently long resume
+
+        # TODO: Move all of this to helpers.py
+        # Create the first prompt for API call
+        prompt = f"""
+            You are an expert resume writer with over 20 years of experience working with
+            job seekers trying to land a role in {request.form.get("industry")}.
+            Highlight the 3 most important responsibilities in this job description:
+            Job Description:
+            '''
+            {request.form.get("jobdescription")}
+            '''
+            """
+        # TODO: Call OpenAI API and prompt it to update the user's resume
+        completion = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
+            temperature=0,
+        )
+        
+        # return render_template("quoted.html", lookup=lookup(request.form.get("symbol")))
+        return apology("TODO", 400)
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("index.html")
+    
 
 @app.route("/about")
 def about():
