@@ -1,6 +1,5 @@
 import os
 
-from cryptography.fernet import Fernet
 from cs50 import SQL
 import datetime
 from flask import Flask, redirect, render_template, request, session
@@ -57,12 +56,7 @@ def api_key():
             return apology("must provide a valid API Key", 400)
         
         # Get the ferenet instance to encrypt the API key
-        # fernet_instance = get_fernet_instance()
-        
-        ###TEST###
-        with open('/Users/jadonvanyo/Desktop/cs50/final_project/secret_keys/secret_key.txt', 'r', encoding='utf-8') as file:
-            # Generate fernet instance to encrypt the user's secret key from secret key in file
-            fernet_instance = Fernet(file.read().strip())
+        fernet_instance = get_fernet_instance()
         
         # Update the users encrypted API key in the users database
         db.execute(
