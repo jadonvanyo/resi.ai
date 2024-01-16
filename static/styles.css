@@ -26,7 +26,7 @@ nav .navbar-brand
     background-color: #2b3035;
 } */
 
-/* Adjsut text color */
+/* Adjust text color */
 h1, p
 {
     color: #ccc;
@@ -81,7 +81,7 @@ h1, p
     background-color: #2b3035;
 }
 
-/* Adjust the input backgorund color when clicked on */
+/* Adjust the input background color when clicked on */
 .form-control:focus
 {
     background-color: #2b3035;

@@ -55,7 +55,7 @@ def api_key():
         if not api_key_validation(request.form.get("user_api_key")):
             return apology("must provide a valid API Key", 400)
         
-        # Get the ferenet instance to encrypt the API key
+        # Get the fernet instance to encrypt the API key
         fernet_instance = get_fernet_instance()
         
         # Update the users encrypted API key in the users database
