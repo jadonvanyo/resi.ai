@@ -1,12 +1,13 @@
 import os
 
+from cryptography.fernet import Fernet
 from cs50 import SQL
 import datetime
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, get_fernet_instance, login_required, usd
+from helpers import api_key_validation, apology, encrypt_key, get_fernet_instance, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -55,21 +56,18 @@ def api_key():
         if not api_key_validation(request.form.get("user_api_key")):
             return apology("must provide a valid API Key", 400)
         
-        # Generate fernet instance to encrypt the user's secret key
-        # fernet_instance = get_fernet_instance(secret_key)
+        # Get the ferenet instance to encrypt the API key
+        # fernet_instance = get_fernet_instance()
         
-        # Open the file containing the secret keys
-        # TODO: Create your own secret key and update the file path to the file with the secret key
-        with open('/Users/jadonvanyo/Desktop/cs50/final_project/secret_keys/secret_key.txt', 'r') as file:
-            # Read the content of the file
-            content = file.read()
-
-        print(content)
+        ###TEST###
+        with open('/Users/jadonvanyo/Desktop/cs50/final_project/secret_keys/secret_key.txt', 'r', encoding='utf-8') as file:
+            # Generate fernet instance to encrypt the user's secret key from secret key in file
+            fernet_instance = Fernet(file.read().strip())
         
-        # Update the users API key in the users database
+        # Update the users encrypted API key in the users database
         db.execute(
             "UPDATE users SET api_key = ? WHERE id = ?;",
-            request.form.get("user_api_key"), session["user_id"]
+            encrypt_key(request.form.get("user_api_key"), fernet_instance), session["user_id"]
         )
         
         # Redirect to the main page
@@ -120,7 +118,7 @@ def login():
 @app.route("/logout")
 def logout():
     """Log user out"""
-
+    # TODO: Set OpenAi API to NULL
     # Forget any user_id
     session.clear()
 

@@ -62,9 +62,15 @@ def encrypt_key(key, fernet_instance):
     """Encrypt a user's key prior to storage"""
     return fernet_instance.encrypt(key.encode())
 
-def get_fernet_instance(secret_key):
-    """Initialize Fernet using a secret key"""
-    return Fernet(secret_key)
+def get_fernet_instance():
+    """Initialize and return a Fernet instance using a secret key"""
+    # TODO: Create your own secret key and update the file path to the file with the secret key
+    # Open the file containing the secret key
+    with open('/Users/jadonvanyo/Desktop/cs50/final_project/secret_keys/secret_key.txt', 'r', encoding='utf-8') as file:
+        # Generate fernet instance to encrypt the user's secret key from secret key in file
+        fernet_instance = Fernet(file.read().strip())
+    
+    return fernet_instance
 
 def login_required(f):
     """
