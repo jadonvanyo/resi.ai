@@ -3,5 +3,50 @@
 {% block title %}
     Home
 {% endblock %}
-    <!-- TODO: Create the main feature to take users resume, job desription, job title, ect and update the user's resume -->
+
+{% block main %}
+    <!-- TODO: Set the textareas to auto resize as the user types -->
+    <div class="mb-4">
+        <h1>Tailored Resume</h1>
+    </div>
+    <form>        
+        <div class="mb-3 form-container">
+            <label class="form-label" for="jobtitle">Target Job Title</label>
+            <input type="text" class="form-control" id="jobtitle" name="jobtitle" placeholder="Target Job Title" required>
+        </div>
+
+        <div class="mb-3 form-container">
+            <label class="form-label" for="industry">Target Job Industry</label>
+            <input type="text" class="form-control" id="industry" name="industry" placeholder="Target Job Industry" required>
+        </div>
+
+        <div class="mb-3 form-container">
+            <label class="form-label" for="company">Target Company</label>
+            <input type="text" class="form-control" id="company" name="company" placeholder="Target Company" required>
+        </div>
+
+        <div class="mb-3 form-container">
+            <label class="form-label" for="prevjob">Current/Previous Job Title</label>
+            <input type="text" class="form-control" id="prevjob" name="prevjob" placeholder="Current/Previous Job Title" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
+            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription" required></textarea>
+        </div>
+
+        <div class="mb-1">
+            <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume"></textarea>
+        </div>
+  
+        <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="savedresume" name="savedresume">
+              <label class="form-check-label" for="savedresume">Use saved resume</label>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-primary" type="submit">Submit Resume</button>
+        </div>
+    </form>
 {% endblock %}

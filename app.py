@@ -35,7 +35,7 @@ def after_request(response):
 @login_required
 def index():
     """Show the previously submitted resumes"""
-    return apology("TODO", 400)
+    return render_template("index.html")
 
 
 @app.route("/about")

@@ -95,8 +95,19 @@ h1, p
 
 /* Set the width and center the input box */
 .form-container {
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
+}
+
+/* Center the checkboxes on the page */
+.form-check {
+    display: flex;
+    justify-content: center;
+}
+
+/* Add a space between the checkbox and label */
+input[type="checkbox"] {
+    margin-right: 10px; /* Adjust the value as needed */
 }
 
 /* Media query for mobile devices */
@@ -105,6 +116,11 @@ h1, p
     {
         height: 6rem;
         width: auto;
+    }
+
+    .form-container {
+        width: 300px;
+        margin: 0 auto;
     }
 
     .text-area
