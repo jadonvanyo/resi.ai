@@ -4,7 +4,6 @@ from cs50 import SQL
 import datetime
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
-import openai
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, login_required, usd
@@ -52,9 +51,8 @@ def api_key():
         if not request.form.get("user_api_key"):
             return apology("must provide API Key", 400)
         
-        # TODO: Validate user's API Key        
+        # Validate user's API Key        
         if not api_key_validation(request.form.get("user_api_key")):
-            print(f"API Key: {request.form.get("user_api_key")} not valid")
             return apology("must provide a valid API Key", 400)
         
         # Update the users API key in the users database
@@ -62,7 +60,9 @@ def api_key():
             "UPDATE users SET api_key = ? WHERE id = ?;",
             request.form.get("user_api_key"), session["user_id"]
         )
-        print("API key successfully updated.")
+        
+        # Redirect to the main page
+        return redirect("/")
     
     else:
         return render_template("api_key.html")

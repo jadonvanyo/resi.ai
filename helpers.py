@@ -6,6 +6,8 @@ from functools import wraps
 def api_key_validation(user_api_key):
     # Enter the users entered API key to into an open api
     openai.api_key = f"{user_api_key}"
+    
+    # Try the user's API key with a test run
     try:
         completion = openai.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -18,10 +20,13 @@ def api_key_validation(user_api_key):
             max_tokens=5,
             temperature=0,
         )
+        
+        # If a response exists, the function returns True
+        if completion.choices[0].message.content:
+            return True
+    # If no test message is returned, the model returns false
     except:
         return False
-    else:
-        return True
         
 
 def apology(message, code=400):
