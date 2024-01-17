@@ -6,10 +6,14 @@
 
 {% block main %}
     <!-- TODO: Set the textareas to auto resize as the user types -->
-    <div class="mb-4">
+    <div class="mb-5">
         <h1>Tailored Resume</h1>
+        <p>Just copy and paste all the necessary information and get a resume tailored specifically for the job in seconds!
+            For best results, ensure your resume does not have any fancy formatting or layouts. You can save your resume for
+            easy access in the <a href="/account">Account</a> page.
+        </p>
     </div>
-    <form action="/" method="post">        
+    <form action="/" id="resumeForm" method="post">        
         <div class="mb-3 form-container">
             <label class="form-label" for="jobtitle">Target Job Title</label>
             <input type="text" class="form-control" id="jobtitle" name="jobtitle" placeholder="Target Job Title" required>
@@ -47,7 +51,9 @@
 
         <div class="mb-3">
             <p>(This may take a few seconds)</p>
-            <button class="btn btn-primary" type="submit">Submit Resume</button>
+            <button class="btn btn-primary" id="submitbutton" type="submit">Submit Resume</button>
         </div>
     </form>
 {% endblock %}
+
+<!-- TODO: Implement AJAX to create loading efect when submit is clicked (in script) -->

@@ -91,10 +91,11 @@ def index():
         
         # TODO: Check that the user entered a sufficiently long resume
 
-        # TODO: Redirect the user to a loading screen while the functions work (do not use return)
+        # TODO: Redirect the user to a loading screen while the functions work (use AJAX)
+        
         # TODO: Move all of this to helpers.py
-        # TODO: decrypt the API key and set it before completing the prompt
-        # Create the first prompt for API call
+        
+        # Create the first prompt for API call to get most important 
         prompt = f"""
             You are an expert resume writer with over 20 years of experience working with
             job seekers trying to land a role in {request.form.get("industry")}.
@@ -104,14 +105,57 @@ def index():
             {request.form.get("jobdescription")}
             '''
             """
-            
-        imp_resp = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt)
-        print(imp_resp)
         
-        # TODO: Call OpenAI API and prompt it to update the user's resume
+        # 
+        imp_resp = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.1)
         
-        # return render_template("quoted.html", lookup=lookup(request.form.get("symbol")))
-        return apology("TODO", 400)
+        prompt = f"""
+            You are an expert resume writer with over 20 years of experience working with
+            job seekers trying to land a role in {request.form.get("industry")}. You specialize in helping
+            write resumes for a {request.form.get("prevjob")} looking to transition to a new career path 
+            in {request.form.get("industry")}.
+
+            Based on these 3 most important responsibilities from the job description,
+            please tailor my resume for this {request.form.get("jobtitle")} position at
+            {request.form.get("company")}. Do not make information up.
+
+            3 Most important responsibilities: 
+            '''
+            {imp_resp}
+            '''
+
+            Resume:
+            '''
+            {resume}
+            '''
+            """
+        
+        tailored_resume = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.5)
+        
+        prompt = f"""
+            List out the differences between my original resume and the suggested draft \
+            in table format with 2 columns: Original and Updated. Be specific and list out \
+            exactly what was changed, down to the exact wording.
+
+            My Original:
+            '''
+            {resume}
+            '''
+
+            Suggested Draft:
+            '''
+            {tailored_resume}
+            '''
+            """
+        
+        differences = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.3)
+        
+        # TODO: Create new resume database
+        
+        # TODO: Save the new resume in a new resume database
+        
+        # Render a new page with the 3 key responsibilities, differences, and tailored resume
+        return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -121,6 +165,13 @@ def index():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template("account.html")
+
 
 @app.route("/api_key", methods=["GET", "POST"])
 @login_required
