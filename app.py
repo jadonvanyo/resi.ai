@@ -82,7 +82,7 @@ def index():
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
-            "SELECT api_key FROM users WHERE id = ?;", 1
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
         
         # Ensure the user has entered an API key
@@ -170,7 +170,16 @@ def about():
 @app.route("/account")
 @login_required
 def account():
-    return render_template("account.html")
+    # SELECT the user's email from users
+    email = (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]
+    
+    # SELECT the user's encrypted API key from users
+    encrypted_api_key = (db.execute(
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
+    
+    # Return the account page with all the required information added
+    return render_template("account.html", email=email, api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
 
 
 @app.route("/api_key", methods=["GET", "POST"])
@@ -244,11 +253,18 @@ def login():
 def logout():
     """Log user out"""
     # TODO: Set OpenAi API to NULL
+    
     # Forget any user_id
     session.clear()
 
     # Redirect user to login form
     return redirect("/")
+
+
+@app.route("/price_estimator")
+@login_required
+def price_estimator():
+    return render_template("price_estimator.html")
 
 
 @app.route("/register", methods=["GET", "POST"])

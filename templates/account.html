@@ -5,11 +5,27 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container text-area">
-        <h4>Email: </h4>
-        <p>
-            <!-- TODO: Create a page that allows the user to update any of the information they wish -->
-            <!-- TODO: Include a field to enter their resume and store the resume in the user dataase -->
-        </p>
-    </div>
+    <form action="/account" method="post">
+        <div class="form-container mb-3">
+            <label for="InputEmail" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="InputEmail1" name="email" value={{ email }} required>
+        </div>
+        <div class="form-container mb-3">
+            <label for="InputPassword" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="InputPassword" name="password" placeholder="New Password">
+        </div>
+        <div class="form-container mb-3">
+            <label for="InputConfirmation" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="InputConfirmation" name="confirmation" placeholder="Confirm New Password">
+        </div>
+        <div class="form-container mb-3">
+            <label for="InputAPIKey" class="form-label">API Key</label>
+            <input type="password" class="form-control" id="InputAPIKey" name="api_key" value={{ api_key }} required>
+        </div>
+        <div class="mb-3">
+            <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 {% endblock %}
