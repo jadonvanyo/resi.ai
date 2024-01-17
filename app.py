@@ -7,7 +7,7 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, encrypt_key, get_fernet_instance, login_required, usd
+from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_fernet_instance, get_response, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -81,9 +81,9 @@ def index():
             resume = request.form.get("resume")
         
         # SELECT the user's encrypted API key from users
-        encrypted_api_key = db.execute(
-                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
-        )
+        encrypted_api_key = (db.execute(
+            "SELECT api_key FROM users WHERE id = ?;", 1
+        ))[0]["api_key"]
         
         # Ensure the user has entered an API key
         if not encrypted_api_key:
@@ -91,7 +91,9 @@ def index():
         
         # TODO: Check that the user entered a sufficiently long resume
 
+        # TODO: Redirect the user to a loading screen while the functions work (do not use return)
         # TODO: Move all of this to helpers.py
+        # TODO: decrypt the API key and set it before completing the prompt
         # Create the first prompt for API call
         prompt = f"""
             You are an expert resume writer with over 20 years of experience working with
@@ -102,17 +104,11 @@ def index():
             {request.form.get("jobdescription")}
             '''
             """
+            
+        imp_resp = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt)
+        print(imp_resp)
+        
         # TODO: Call OpenAI API and prompt it to update the user's resume
-        completion = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ],
-            temperature=0,
-        )
         
         # return render_template("quoted.html", lookup=lookup(request.form.get("symbol")))
         return apology("TODO", 400)

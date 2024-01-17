@@ -54,6 +54,19 @@ def apology(message, code=400):
 
     return render_template("apology.html", top=code, bottom=escape(message)), code
 
+def get_response(api_key, prompt, temp=0):
+    """Generate a response from ChatGPT"""
+    # Enter the users entered API key to into an open api
+    openai.api_key = f"{api_key}"
+    
+    completion = openai.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temp,
+    )
+    
+    return completion.choices[0].message.content
+
 def decrypt_key(encrypted_key, fernet_instance):
     """Decrypt a user's API key"""
     return fernet_instance.decrypt(encrypted_key).decode()
