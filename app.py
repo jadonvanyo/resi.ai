@@ -78,7 +78,13 @@ def index():
         
         # Store resume if the user entered a resume
         elif request.form.get("resume") and not request.form.get("savedresume"):
-            resume = request.form.get("resume")
+            # Check that the user entered a sufficiently long resume
+            if len(request.form.get("resume")) < 1500:
+                return apology("resume too short", 400)
+            else:
+                resume = request.form.get("resume")
+            
+        # TODO: Select stored resume if user selected to use the saved resume
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
@@ -88,8 +94,6 @@ def index():
         # Ensure the user has entered an API key
         if not encrypted_api_key:
             return apology("no saved api key", 400)
-        
-        # TODO: Check that the user entered a sufficiently long resume
 
         # TODO: Redirect the user to a loading screen while the functions work (use AJAX)
         
@@ -167,19 +171,97 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/account")
+@app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-    # SELECT the user's email from users
-    email = (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure email was submitted
+        if not request.form.get("email"):
+            return apology("must provide email", 400)
+        
+        # Ensure an API key was submitted
+        elif not request.form.get("user_api_key"):
+            return apology("must provide API Key", 400)
+        
+        # Check if the user entered a new password
+        elif request.form.get("password") or request.form.get("confirmation"):
+            # Determine if the password and confirmation do not match
+            if request.form.get("password") != request.form.get("confirmation"):
+                return apology("new password and confirmation must match", 403)
+            
+            # SELECT the users hash from users
+            old_hash = (db.execute(
+                "SELECT hash FROM users WHERE id = ?", session["user_id"]
+            ))[0]["hash"]
+            
+            # Check if the password matches the password the user already has
+            if check_password_hash(old_hash, request.form.get("password")):
+                return apology("password already in use", 403)
+            
+            # UPDATE the user's password in users if all checks pass
+            db.execute(
+                "UPDATE users SET hash = ? WHERE id = ?;",
+                generate_password_hash(request.form.get("password")), session["user_id"]
+            )
+        
+        # Check if the user has entered an email that is different than their previous email
+        elif request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
+            # UPDATE the user's email in users
+            db.execute(
+                "UPDATE users SET email = ? WHERE id = ?;",
+                request.form.get("email"), session["user_id"]
+            )
+        
+        # TODO: Move pulling encrypted file out of elif statement below
+        # Check if the user has entered an API key different than the onw previously in the database
+        if request.form.get("user_api_key") != decrypt_key(
+            (db.execute("SELECT api_key FROM users WHERE id = ?", 
+                session["user_id"]))[0]["api_key"], get_fernet_instance()
+        ):
+             # Validate user's API Key
+            if not api_key_validation(request.form.get("user_api_key")):
+                return apology("must provide a valid API Key", 400)
+            
+            # Update the users encrypted API key in the users database
+            db.execute(
+                "UPDATE users SET api_key = ? WHERE id = ?;",
+                encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
+            )
+            
+        # Check if the user entered a resume
+        if request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
+                session["user_id"]))[0]["resume"]:
+            # Check that the user entered a sufficiently long resume
+            if len(request.form.get("resume")) < 1500:
+                return apology("resume too short", 400)
+            # UPDATE the users resume in users
+            else:
+                db.execute(
+                    "UPDATE users SET resume = ? WHERE id = ?;",
+                    request.form.get("resume"), session["user_id"]
+                )
+        
+        # After all updates are made, redirect the user to the updated account page
+        return redirect("/account")
     
-    # SELECT the user's encrypted API key from users
-    encrypted_api_key = (db.execute(
-            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        # SELECT the user's email from users
+        email = (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]
+        
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
-    
-    # Return the account page with all the required information added
-    return render_template("account.html", email=email, api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
+        
+        # SELECT the user's resume from users
+        resume = (db.execute(
+            "SELECT resume FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["resume"]
+        
+        # Return the account page with all the required information added
+        return render_template("account.html", email=email, user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()), resume=resume)
 
 
 @app.route("/api_key", methods=["GET", "POST"])
@@ -191,6 +273,9 @@ def api_key():
         if not request.form.get("user_api_key"):
             return apology("must provide API Key", 400)
         
+        # TODO: Check if the user already has a API key
+        # TODO: If the user does, verify that it is different from the previous API key, then update it if it is different
+        # TODO: Else proceed as normal
         # Validate user's API Key        
         if not api_key_validation(request.form.get("user_api_key")):
             return apology("must provide a valid API Key", 400)
@@ -295,10 +380,6 @@ def register():
         # Insert new user into the database and remember which user has logged in
         session["user_id"] = db.execute("INSERT INTO users (email, hash) VALUES(?, ?);", 
             request.form.get("email"), generate_password_hash(request.form.get("password")))
-
-        # TODO: Delete this
-        # Remember which user has logged in
-        # session["user_id"] = id
 
         # Redirect to the API key page
         return redirect("/api_key")

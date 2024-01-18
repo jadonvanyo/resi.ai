@@ -8,7 +8,7 @@
     <form action="/account" method="post">
         <div class="form-container mb-3">
             <label for="InputEmail" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="InputEmail1" name="email" value={{ email }} required>
+            <input type="email" class="form-control" id="InputEmail" name="email" value={{ email }} required>
         </div>
         <div class="form-container mb-3">
             <label for="InputPassword" class="form-label">New Password</label>
@@ -20,12 +20,12 @@
         </div>
         <div class="form-container mb-3">
             <label for="InputAPIKey" class="form-label">API Key</label>
-            <input type="password" class="form-control" id="InputAPIKey" name="api_key" value={{ api_key }} required>
+            <input type="password" class="form-control" id="InputAPIKey" name="user_api_key" value={{ user_api_key }} required>
         </div>
         <div class="mb-3">
             <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
-            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume"></textarea>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume">{{ resume }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 {% endblock %}
