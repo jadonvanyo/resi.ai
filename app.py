@@ -58,33 +58,16 @@ def index():
         elif not request.form.get("jobdescription"):
             return apology("missing job description", 400)
         
-        # Ensure that the user entered a resume or selected to use their saved resume
-        elif not request.form.get("resume") and not request.form.get("savedresume"):
+        # Ensure that the user entered a resume
+        elif not request.form.get("resume"):
             return apology("missing resume", 400)
         
-        # Ensure the user has not entered a resume and selected to use a saved resume
-        elif request.form.get("resume") and request.form.get("savedresume"):
-            return apology("cannot use 2 resumes at once", 400)
-        
-        # Ensure the user has a resume saved if they selected to use a saved resume and did not enter a resume
-        elif not request.form.get("resume") and request.form.get("savedresume"):
-            # SELECT the user's resume from users
-            resume = db.execute(
-                "SELECT resume FROM users WHERE id = ?;", session["user_id"]
-            )
-            # Ensure the user has a resume saved in users
-            if not resume:
-                return apology("no saved resume", 400)
+        # Check that the user entered a sufficiently long resume
+        elif len(request.form.get("resume")) < 1500:
+                return apology("resume too short", 400)
         
         # Store resume if the user entered a resume
-        elif request.form.get("resume") and not request.form.get("savedresume"):
-            # Check that the user entered a sufficiently long resume
-            if len(request.form.get("resume")) < 1500:
-                return apology("resume too short", 400)
-            else:
-                resume = request.form.get("resume")
-            
-        # TODO: Select stored resume if user selected to use the saved resume
+        resume = request.form.get("resume")
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
@@ -110,7 +93,6 @@ def index():
             '''
             """
         
-        # 
         imp_resp = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.1)
         
         prompt = f"""
@@ -163,7 +145,12 @@ def index():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("index.html")
+        # SELECT the user's resume from users
+        resume = (db.execute(
+            "SELECT resume FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["resume"]
+        
+        return render_template("index.html", resume=resume)
     
 
 @app.route("/about")
@@ -267,7 +254,8 @@ def account():
 @app.route("/api_key", methods=["GET", "POST"])
 @login_required
 def api_key():
-    """Allow users to set up their API Key"""
+    """Allow users to set up and update their API Key"""
+    # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure API Key was submitted
         if not request.form.get("user_api_key"):
@@ -291,8 +279,10 @@ def api_key():
         
         # Redirect to the main page
         return redirect("/")
-    
+
+    # User reached route via GET (as by clicking a link or via redirect)
     else:
+        # TODO: SELECT API key from users if the user has an API key
         return render_template("api_key.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -346,10 +336,33 @@ def logout():
     return redirect("/")
 
 
-@app.route("/price_estimator")
+@app.route("/price_estimator", methods=["GET", "POST"])
 @login_required
 def price_estimator():
-    return render_template("price_estimator.html")
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure a job description was entered
+        if not request.form.get("jobdescription"):
+            return apology("must provide job description", 403)
+        
+        # Ensure a resume was submitted
+        elif not request.form.get("resume"):
+            return apology("must provide a resume", 403)
+        
+        # Check that the user entered a sufficiently long resume
+        elif len(request.form.get("resume")) < 1500:
+                return apology("resume too short", 400)
+        
+        # TODO: Calculate the number of price needed for the total prompt
+        return apology("TODO", 403)
+    
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        # SELECT the user's resume from users
+        resume = (db.execute(
+            "SELECT resume FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["resume"]
+        return render_template("price_estimator.html", resume=resume)
 
 
 @app.route("/register", methods=["GET", "POST"])
