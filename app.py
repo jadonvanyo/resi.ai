@@ -3,7 +3,7 @@ import os
 import openai
 from cs50 import SQL
 import datetime
-from flask import Flask, jsonify, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -200,10 +200,26 @@ def account():
                 request.form.get("email"), session["user_id"]
             )
         
-        # Check if the user has entered an API key different than the onw previously in the database
-        if request.form.get("user_api_key") != decrypt_key(
-            (db.execute("SELECT api_key FROM users WHERE id = ?", 
-                session["user_id"]))[0]["api_key"], get_fernet_instance()
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
+            
+        # Check if the user already has an API key saved
+        if not encrypted_api_key:
+             # Validate user's API Key
+            if not api_key_validation(request.form.get("user_api_key")):
+                return apology("must provide a valid API Key", 400)
+            
+            # Update the users encrypted API key in the users database
+            db.execute(
+                "UPDATE users SET api_key = ? WHERE id = ?;",
+                encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
+            )
+        
+        # Check if the user has entered an API key different than the one previously in the database
+        elif request.form.get("user_api_key") != decrypt_key(
+            encrypted_api_key, get_fernet_instance()
         ):
              # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
@@ -246,8 +262,13 @@ def account():
             "SELECT resume FROM users WHERE id = ?;", session["user_id"]
         ))[0]["resume"]
         
-        # Return the account page with all the required information added
-        return render_template("account.html", email=email, user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()), resume=resume)
+        # Return an Account page without the API key
+        if not encrypted_api_key:
+            return render_template("account.html", email=email, user_api_key="", resume=resume)
+            
+        else:
+            # Return the account page with all the required information added
+            return render_template("account.html", email=email, user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()), resume=resume)
 
 
 @app.route("/api_key", methods=["GET", "POST"])
@@ -342,11 +363,11 @@ def price_estimator():
     if request.method == "POST":
         # Ensure a job description was entered
         if not request.form.get("jobdescription"):
-            return apology("must provide job description", 403)
+            return apology("must provide job description", 400)
         
         # Ensure a resume was submitted
         elif not request.form.get("resume"):
-            return apology("must provide a resume", 403)
+            return apology("must provide a resume", 400)
         
         # Check that the user entered a sufficiently long resume
         elif len(request.form.get("resume")) < 1500:
@@ -367,8 +388,8 @@ def price_estimator():
         # Calculate the number of price needed for the total prompt
         total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()), price_estimate_inputs, price_estimate_outputs)
         
-        # Return JSON response
-        return jsonify({'total_cost': total_cost})
+        # Return template with the price estimate
+        return render_template("cost_estimate.html", total_cost=total_cost)
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:

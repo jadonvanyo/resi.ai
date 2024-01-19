@@ -28,27 +28,4 @@
         <button class="btn btn-primary" id="submitbutton" type="submit">Get Price Estimate</button>
     </div>
 </form>
-
-<div id="totalCost"></div>
-{% endblock %}
-
-{% block script %}
-$(document).ready(function() {
-    $("#submitbutton").click(function(event) {
-        event.preventDefault();
-        var jobDescription = $("#jobarea").val();
-        var resume = $("#resumearea").val();
-        $.ajax({
-            url: "/price_estimator",
-            type: "POST",
-            data: {
-                jobdescription: jobDescription,
-                resume: resume
-            },
-            success: function(response) {
-                $("#totalCost").html("Total Cost Estimate: $" + response.total_cost);
-            }
-        });
-    });
-});
 {% endblock %}

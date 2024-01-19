@@ -146,7 +146,7 @@ example_outputs = [
 ]
 
 # Enter the users entered API key to into an open api
-openai.api_key = "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"
+# openai.api_key = 
 
 # Count token function
 inputs = openai.chat.completions.create(
