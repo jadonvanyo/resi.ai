@@ -3,11 +3,11 @@ import os
 import openai
 from cs50 import SQL
 import datetime
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_fernet_instance, get_response, login_required, usd
+from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_fernet_instance, get_response, login_required, price_estimation, price_estimator_prompts, usd
 
 # Configure application
 app = Flask(__name__)
@@ -200,7 +200,6 @@ def account():
                 request.form.get("email"), session["user_id"]
             )
         
-        # TODO: Move pulling encrypted file out of elif statement below
         # Check if the user has entered an API key different than the onw previously in the database
         if request.form.get("user_api_key") != decrypt_key(
             (db.execute("SELECT api_key FROM users WHERE id = ?", 
@@ -352,9 +351,24 @@ def price_estimator():
         # Check that the user entered a sufficiently long resume
         elif len(request.form.get("resume")) < 1500:
                 return apology("resume too short", 400)
+            
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
         
-        # TODO: Calculate the number of price needed for the total prompt
-        return apology("TODO", 403)
+        # Ensure the user has entered an API key
+        if not encrypted_api_key:
+            return apology("no saved api key", 400)
+        
+        # Call function to create the example prompts required a tailor the resume
+        price_estimate_inputs, price_estimate_outputs = price_estimator_prompts(request.form.get("jobdescription"), request.form.get("resume"))
+        
+        # Calculate the number of price needed for the total prompt
+        total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()), price_estimate_inputs, price_estimate_outputs)
+        
+        # Return JSON response
+        return jsonify({'total_cost': total_cost})
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:
