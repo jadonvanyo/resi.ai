@@ -74,7 +74,7 @@ def index():
             "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
         
-        # Ensure the user has entered an API key
+        # Ensure the user has an API key
         if not encrypted_api_key:
             return apology("no saved api key", 400)
 
@@ -389,7 +389,7 @@ def price_estimator():
         total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()), price_estimate_inputs, price_estimate_outputs)
         
         # Return template with the price estimate
-        return render_template("cost_estimate.html", total_cost=total_cost)
+        return render_template("price_estimate.html", total_cost=total_cost)
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:
