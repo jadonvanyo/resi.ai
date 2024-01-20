@@ -10,7 +10,6 @@
         <!-- http://getbootstrap.com/docs/5.3/ -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
         <!-- https://favicon.io/favicon-generator/ -->
         <link href="../static/favicon.ico" rel="icon">
@@ -65,7 +64,11 @@
         {% endif %}
 
         <main class="container py-3 text-center">
-            {% block main %}{% endblock %}
+            <ul>
+                <li><strong>Data Analysis and Insight Generation:</strong> Interpret and analyze data from multiple sources including healthcare provider, member/patient, and third-party data to extract value, influence business decisions, and improve clinical outcomes for members.</li>
+                <li><strong>Project Management and Problem-Solving:</strong> Support execution of large-scale projects with limited direction, manage multiple tasks within targeted timelines, and perform root-cause analysis of data irregularities, presenting findings and solutions to leadership.</li>
+                <li><strong>Communication and Stakeholder Engagement:</strong> Effectively communicate findings and insights to non-technical business partners, independently engage with customers for requirement gathering, and present data-driven insights to internal and external stakeholders.</li>
+            </ul>            
         </main>
 
         <footer class="mb-5">
@@ -90,8 +93,7 @@
                     '>\n' + document.documentElement.outerHTML;
                     document.querySelector('form[action="https://validator.w3.org/check"] > input[name="fragment"]').value = html;
                 });
-
-                {% block script %}{% endblock %}
+                
             </script>                
         </footer>
             

@@ -3,7 +3,7 @@ import os
 import openai
 from cs50 import SQL
 import datetime
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -77,7 +77,7 @@ def index():
         # Ensure the user has an API key
         if not encrypted_api_key:
             return apology("no saved api key", 400)
-
+    
         # TODO: Redirect the user to a loading screen while the functions work (use AJAX)
         
         # TODO: Move all of this to helpers.py
@@ -141,7 +141,12 @@ def index():
         # TODO: Save the new resume in a new resume database
         
         # Render a new page with the 3 key responsibilities, differences, and tailored resume
-        return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
+        # return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
+        return jsonify({
+            'status': 'success',
+            'message': 'Resume processed successfully'
+            # Add any other data you need to send back
+        })
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:

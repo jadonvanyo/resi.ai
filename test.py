@@ -11,7 +11,7 @@ def get_response(api_key, prompt, temp=0):
         temperature=temp,
     )
     
-    return completion.choices[0]
+    return completion.choices[0].message.content
 
 jobdescription = """You could be the one who changes everything for our 28 million members. Centene is transforming the health of our communities, one person at a time. As a diversified, national organization, you’ll have access to competitive benefits including a fresh perspective on workplace flexibility.
 Position Purpose: Analyze integrated and extensive datasets to extract value, which directly impacts and influences business decisions. Work collaboratively with key business stakeholders to identify areas of value, develop solutions, and deliver insights to reduce overall cost of care for members and improve their clinical outcomes.
@@ -31,13 +31,16 @@ Regional and HBR Analytics: Experience in emerging trend analysis, financial mod
 
 prompt = f"""
             You are an expert resume writer with over 20 years of experience working with
-            job seekers trying to land a role in industry.
+            job seekers trying to land a role in industry. Please return your answers in just html format.
             Highlight the 3 most important responsibilities in this job description:
             Job Description:
             '''
             {jobdescription}
             '''
             """
+            
+
+print(get_response("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", prompt, temp=0.2))
             
 resume = """Summary: Adaptable and curious mechanical engineer with experience managing complex projects, working on cross-functional teams, and problem solving seeking to apply my skills to the Technical Program Manager Role at Microsoft. I am excited to bring my strong understanding of engineering fundamentals and analytical skills from my technical experience in the aerospace industry.   
 
@@ -67,100 +70,4 @@ Designed and implemented testing equipment that increased cycle durability testi
 Established a storage system that optimized storage process and increased capacity by 25%
 Designed and analyzed new actuator clamp band design geometries in Creo Parametric to improve the overall sealing by 8%
 """
-            
-example_inputs = [
-    {
-        "role": "user",
-        "content": f"""
-            You are an expert resume writer with over 20 years of experience working with
-            job seekers trying to land a role in industry.
-            Highlight the 3 most important responsibilities in this job description:
-            Job Description:
-            '''
-            {jobdescription}
-            '''
-            """,
-    },
-    {
-        "role": "user",
-        "content": f"""
-            You are an expert resume writer with over 20 years of experience working with
-            job seekers trying to land a role in industry. You specialize in helping
-            write resumes for a example job looking to transition to a new career path 
-            in industry.
 
-            Based on these 3 most important responsibilities from the job description,
-            please tailor my resume for this example job title position at
-            example company. Do not make information up.
-
-            3 Most important responsibilities: 
-            '''
-            Example:
-            1. Analyze integrated and extensive datasets to extract value, which directly impacts and influences business decisions.
-            2. Interpret and analyze data from multiple sources including healthcare provider, member/patient, and third-party data.
-            3. Support the design, testing, and implementation of process enhancements and identify opportunities for automation.
-            '''
-
-            Resume:
-            '''
-            {resume}
-            '''
-            """,
-    },
-    {
-        "role": "user",
-        "content": f"""
-            List out the differences between my original resume and the suggested draft \
-            in table format with 2 columns: Original and Updated. Be specific and list out \
-            exactly what was changed, down to the exact wording.
-
-            My Original:
-            '''
-            {resume}
-            '''
-
-            Suggested Draft:
-            '''
-            {resume}
-            '''
-            """,
-    },
-]
-example_outputs = [
-    {
-        "role": "assistant",
-        "content": """
-            Example:
-            1. Analyze integrated and extensive datasets to extract value, which directly impacts and influences business decisions.
-            2. Interpret and analyze data from multiple sources including healthcare provider, member/patient, and third-party data.
-            3. Support the design, testing, and implementation of process enhancements and identify opportunities for automation.""",
-    },
-    {
-        "role": "assistant",
-        "content": resume,
-    },
-    {
-        "role": "assistant",
-        "content": resume,
-    },
-]
-
-# Enter the users entered API key to into an open api
-# openai.api_key = 
-
-# Count token function
-inputs = openai.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=example_inputs,
-    temperature=0.2,
-    max_tokens=1,  # we're only counting input tokens here, so let's not waste tokens on the output
-)
-
-outputs = openai.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=example_outputs,
-    temperature=0.2,
-    max_tokens=1,  # we're only counting input tokens here, so let's not waste tokens on the output
-)
-total_cost = (((inputs.usage.prompt_tokens) / 1000) * 0.001) + (((outputs.usage.prompt_tokens) / 1000) * 0.002)
-print(total_cost)
