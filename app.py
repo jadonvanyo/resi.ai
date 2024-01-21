@@ -3,7 +3,7 @@ import os
 import openai
 from cs50 import SQL
 import datetime
-from flask import Flask, jsonify, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -144,10 +144,10 @@ def index():
         # return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
         return jsonify({
             'status': 'success',
-            'message': 'Resume processed successfully'
-            # Add any other data you need to send back
+            'message': 'Resume processed successfully',
+            'newContent': render_template_string(f'<p>{imp_resp}</p>')
         })
-
+        
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         # SELECT the user's resume from users

@@ -49,6 +49,11 @@
             <button class="btn btn-primary" id="submitbutton" type="submit">Submit Resume</button>
         </div>
     </form>
+
+    <div class="container py-4" id="returnresume" hidden>
+        <div id="impresp">
+        </div>
+    </div>
 {% endblock %}
 
 <!-- TODO: Implement AJAX to create loading efect when submit is clicked (in script) -->
@@ -66,10 +71,14 @@ $(document).ready(function() {
             type: "POST",
             url: url,
             data: form.serialize(), // Serialize form data
-            success: function(data) {
-                // Handle success (You can redirect or update content)
-                alert(data.message); // Example: alert the response message
-                // Redirect or update page content as needed
+            success: function(response) {
+                if(response.status === 'success') {
+                    // Remove the hidden attribute from #returnresume
+                    $('#returnresume').removeAttr('hidden');
+                    
+                    // Update your page with the new content
+                    $('#impresp').html(response.newContent);
+                }
             },
             error: function() {
                 // Handle error
