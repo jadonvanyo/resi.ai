@@ -34,24 +34,33 @@
             <input type="text" class="form-control" id="prevjob" name="prevjob" placeholder="Current/Previous Job Title" required>
         </div>
 
+        <!-- Add back the required -->
         <div class="mb-3">
             <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
-            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription" required></textarea>
+            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription"></textarea>
         </div>
 
         <div class="mb-3">
             <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
-            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume">{{ resume }}</textarea>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume" required>{{ resume }}</textarea>
         </div>
 
         <div class="mb-3">
             <p>(This may take a few minutes)</p>
-            <button class="btn btn-primary" id="submitbutton" type="submit">Submit Resume</button>
+            <button class="btn btn-primary" id="submitbutton" type="submit">
+                <span class="spinner-border spinner-border-sm" id="loadingSpinner" aria-hidden="true" style="display: none;"></span>
+                Submit Resume
+            </button>
         </div>
+
     </form>
 
     <div class="container py-4" id="returnresume" hidden>
         <div id="impresp">
+        </div>
+        <div id="tailoredresume">
+        </div>
+        <div id="differences">
         </div>
     </div>
 {% endblock %}
@@ -64,20 +73,28 @@ $(document).ready(function() {
         var form = $(this);
         var url = form.attr('action');
 
-        // Display loading indicator (You can customize this)
-        $('#submitbutton').prop('disabled', true).text('Processing...');
+        // Display loading indicator
+        $('#submitbutton').prop('disabled', true).text(' Processing...');
 
         $.ajax({
             type: "POST",
             url: url,
             data: form.serialize(), // Serialize form data
             success: function(response) {
+
                 if(response.status === 'success') {
                     // Remove the hidden attribute from #returnresume
                     $('#returnresume').removeAttr('hidden');
-                    
-                    // Update your page with the new content
-                    $('#impresp').html(response.newContent);
+
+                    // Update page with the important responsibilities, tailored resume, and differences
+                    $('#impresp').html(response.imp_resp);
+                    $('#tailoredresume').html(response.tailored_resume);
+                    $('#differences').html(response.differences);
+                }
+
+                else if(response.status === 'error') {
+                    // Display a meeasge about what went wrong
+                    alert(response.message)
                 }
             },
             error: function() {
