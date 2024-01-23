@@ -13,6 +13,7 @@
             easy access in the <a href="/account">Account</a> page.
         </p>
     </div>
+    
     <form action="/" id="resumeForm" method="post">        
         <div class="mb-3 form-container">
             <label class="form-label" for="jobtitle">Target Job Title</label>
@@ -34,10 +35,9 @@
             <input type="text" class="form-control" id="prevjob" name="prevjob" placeholder="Current/Previous Job Title" required>
         </div>
 
-        <!-- Add back the required -->
         <div class="mb-3">
             <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
-            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription"></textarea>
+            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription" required></textarea>
         </div>
 
         <div class="mb-3">
@@ -48,7 +48,6 @@
         <div class="mb-3">
             <p>(This may take a few minutes)</p>
             <button class="btn btn-primary" id="submitbutton" type="submit">
-                <span class="spinner-border spinner-border-sm" id="loadingSpinner" aria-hidden="true" style="display: none;"></span>
                 Submit Resume
             </button>
         </div>
@@ -74,7 +73,7 @@ $(document).ready(function() {
         var url = form.attr('action');
 
         // Display loading indicator
-        $('#submitbutton').prop('disabled', true).text(' Processing...');
+        $('#submitbutton').html('Proccessing <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>').prop('disabled', true);
 
         $.ajax({
             type: "POST",
@@ -103,7 +102,7 @@ $(document).ready(function() {
             },
             complete: function() {
                 // Hide loading indicator
-                $('#submitbutton').prop('disabled', false).text('Submit Resume');
+                $('#submitbutton').html('Submit Resume').prop('disabled', false);
             }
         });
     });

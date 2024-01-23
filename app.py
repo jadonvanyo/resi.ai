@@ -40,31 +40,59 @@ def index():
     if request.method == "POST":
         # Ensure the user entered a job title
         if not request.form.get("jobtitle"):
-            return apology("missing target job title", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target job title'
+            })
 
         # Ensure that the user entered an industry
         elif not request.form.get("industry"):
-            return apology("missing target industry", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target industry'
+            })
         
         # Ensure that the user entered a company
         elif not request.form.get("company"):
-            return apology("missing target company", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target company'
+                })
         
         # Ensure that the user entered their current/previous job
         elif not request.form.get("prevjob"):
-            return apology("missing current/previous job", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing current/previous job'
+            })
         
         # Ensure that the user entered a job description
         elif not request.form.get("jobdescription"):
-            return apology("missing job description", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing job description'
+            })
+            
+        # Check that the user entered a sufficiently long job description
+        elif len(request.form.get("jobdescription")) < 250:        
+            return jsonify({
+                'status': 'error',
+                'message': 'Job Description too short'
+            })
         
         # Ensure that the user entered a resume
         elif not request.form.get("resume"):
-            return apology("missing resume", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing resume'
+            })
         
         # Check that the user entered a sufficiently long resume
-        elif len(request.form.get("resume")) < 1500:
-                return apology("resume too short", 400)
+        elif len(request.form.get("resume")) < 1500:        
+            return jsonify({
+                'status': 'error',
+                'message': 'Resume too short'
+            })
         
         # Store resume if the user entered a resume
         resume = request.form.get("resume")
@@ -76,7 +104,10 @@ def index():
         
         # Ensure the user has an API key
         if not encrypted_api_key:
-            return apology("no saved api key", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'No API key saved'
+            })
     
         # TODO: Redirect the user to a loading screen while the functions work (use AJAX)
         
@@ -142,10 +173,13 @@ def index():
         
         # Render a new page with the 3 key responsibilities, differences, and tailored resume
         # return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
+        
         return jsonify({
             'status': 'success',
             'message': 'Resume processed successfully',
-            'newContent': render_template_string(f'<p>{imp_resp}</p>')
+            'imp_resp': render_template_string(f'<p>{imp_resp}</p>'),
+            'tailored_resume': render_template_string(f'<p>{tailored_resume}</p>'),
+            'differences': render_template_string(f'<p>{differences}</p>')
         })
         
     # User reached route via GET (as by clicking a link or via redirect)
