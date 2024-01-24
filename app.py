@@ -9,7 +9,7 @@ from flask_session import Session
 import html2text
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_response, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
 
 # Configure application
 app = Flask(__name__)
@@ -110,6 +110,8 @@ def index():
                 'status': 'error',
                 'message': 'No API key saved'
             })
+            
+        # TODO: Token count checks to ensure none of the token counts exceed the limit
         
         # API call to get the 3 most important responsibilities from the description
         imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()), request.form.get("industry"), request.form.get("jobdescription"))
@@ -130,24 +132,6 @@ def index():
         
         # Convert HTML to text using beautiful soup for future use
         tailored_resume = BeautifulSoup(tailored_resume_html).get_text()
-        
-        # prompt = f"""
-        #     You are an expert resume writer with over 20 years of experience working with job seekers trying to land a role in {request.form.get("industry")}. You specialize in helping write resumes for a {request.form.get("prevjob")} looking to transition to a new career path in {request.form.get("industry")}.
-
-        #     Based on the 3 most important responsibilities from the job description listed below, please tailor my resume for this {request.form.get("jobtitle")} position at {request.form.get("company")}. Do not make information up.
-
-        #     3 Most important responsibilities: 
-        #     '''
-        #     {imp_resp}
-        #     '''
-
-        #     Resume:
-        #     '''
-        #     {resume}
-        #     '''
-        #     """
-        
-        # tailored_resume = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.5)
         
         # TODO: Improve the differences comparison
         

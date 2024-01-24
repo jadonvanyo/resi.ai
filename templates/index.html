@@ -13,7 +13,7 @@
             easy access in the <a href="/account">Account</a> page.
         </p>
     </div>
-    
+
     <form action="/" id="resumeForm" method="post">        
         <div class="mb-3 form-container">
             <label class="form-label" for="jobtitle">Target Job Title</label>
@@ -54,7 +54,8 @@
 
     </form>
 
-    <div class="container py-4" id="returnresume" hidden>
+    <div class="container py-4 mt-4" id="returnresume" hidden>
+        <h1>Tailored Resume</h1>
         <div id="impresp">
         </div>
         <div id="tailoredresume">
@@ -64,7 +65,6 @@
     </div>
 {% endblock %}
 
-<!-- TODO: Implement AJAX to create loading efect when submit is clicked (in script) -->
 {% block script %}
 $(document).ready(function() {
     $('#resumeForm').submit(function(event) {
