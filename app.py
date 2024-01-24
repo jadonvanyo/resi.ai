@@ -334,7 +334,6 @@ def api_key():
             
         else:
             # Return the account page with the API key
-            print("encrypted API Key")
             return render_template("api_key.html", user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
         
 
