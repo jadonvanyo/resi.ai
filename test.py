@@ -143,6 +143,7 @@ Established a storage system that optimized storage process and increased capaci
 Designed and analyzed new actuator clamp band design geometries in Creo Parametric to improve the overall sealing by 8%
 """
 
-tailored_resume_html = get_tailored_resume('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', company, imp_resp, industry, jobtitle, prevjob, resume)
+# WARNING: Missing API key
+tailored_resume_html = get_tailored_resume('', company, imp_resp, industry, jobtitle, prevjob, resume)
 print(tailored_resume_html)
 print(BeautifulSoup(tailored_resume_html).get_text())

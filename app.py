@@ -6,7 +6,6 @@ from cs50 import SQL
 import datetime
 from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
 from flask_session import Session
-import html2text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
@@ -133,7 +132,7 @@ def index():
         # Convert HTML to text using beautiful soup for future use
         tailored_resume = BeautifulSoup(tailored_resume_html).get_text()
         
-        # TODO: Improve the differences comparison
+        # TODO: Improve the differences comparison (Potentially eliminate this feature)
         
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
         
@@ -288,29 +287,56 @@ def api_key():
         if not request.form.get("user_api_key"):
             return apology("must provide API Key", 400)
         
-        # TODO: Check if the user already has a API key
-        # TODO: If the user does, verify that it is different from the previous API key, then update it if it is different
-        # TODO: Else proceed as normal
-        # Validate user's API Key        
-        if not api_key_validation(request.form.get("user_api_key")):
-            return apology("must provide a valid API Key", 400)
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
         
-        # Get the fernet instance to encrypt the API key
-        fernet_instance = get_fernet_instance()
-        
-        # Update the users encrypted API key in the users database
-        db.execute(
-            "UPDATE users SET api_key = ? WHERE id = ?;",
-            encrypt_key(request.form.get("user_api_key"), fernet_instance), session["user_id"]
-        )
-        
+        # Check if the user does not have an API key
+        if not encrypted_api_key:
+            # Validate user's API Key        
+            if not api_key_validation(request.form.get("user_api_key")):
+                return apology("must provide a valid API Key", 400)
+            
+            # Update the users encrypted API key in the users database
+            db.execute(
+                "UPDATE users SET api_key = ? WHERE id = ?;",
+                encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
+            )
+
+        # Check if the user has entered an API key different than the one previously in the database
+        elif request.form.get("user_api_key") != decrypt_key(
+            encrypted_api_key, get_fernet_instance()
+        ):
+             # Validate user's API Key
+            if not api_key_validation(request.form.get("user_api_key")):
+                return apology("must provide a valid API Key", 400)
+            
+            # Update the users encrypted API key in the users database
+            db.execute(
+                "UPDATE users SET api_key = ? WHERE id = ?;",
+                encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
+            )
+            
         # Redirect to the main page
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        # TODO: SELECT API key from users if the user has an API key
-        return render_template("api_key.html")
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
+
+        # Return an Account page without the API key
+        if not encrypted_api_key:
+            return render_template("api_key.html")
+            
+        else:
+            # Return the account page with the API key
+            print("encrypted API Key")
+            return render_template("api_key.html", user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
+        
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -354,7 +380,6 @@ def login():
 @app.route("/logout")
 def logout():
     """Log user out"""
-    # TODO: Set OpenAi API to NULL
     
     # Forget any user_id
     session.clear()

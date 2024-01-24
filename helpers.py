@@ -145,7 +145,9 @@ def get_differences(api_key, original_resume, tailored_resume, temp=0.2):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": f"""
-             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between the original resume and the updated resume in table format with 2 columns: Original and Updated. Be specific and list out exactly what wording was changed. Styling differences can be ignored. Return the table in HTML that can easily be added into the inner HTML of a website. Only return the code, nothing else.
+             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between the original resume and the updated resume in table format with 2 columns: Original and Updated. Be specific and list out exactly what wording was changed. Only list a sentence if it has been changed. 
+             
+             Return the table in HTML that can easily be added into the inner HTML of a website. Only return the code, nothing else.
              """
             },
             {"role": "user", "content": f"""
@@ -167,7 +169,7 @@ def get_differences(api_key, original_resume, tailored_resume, temp=0.2):
     return completion.choices[0].message.content
     
 
-def get_tailored_resume(api_key, company, imp_resp, industry, jobtitle, prevjob, resume, temp=0.45):
+def get_tailored_resume(api_key, company, imp_resp, industry, jobtitle, prevjob, resume, temp=0.7):
     """Generate a tailored resume from OpenAI"""
     openai.api_key = f"{api_key}"
     
@@ -177,7 +179,7 @@ def get_tailored_resume(api_key, company, imp_resp, industry, jobtitle, prevjob,
             {"role": "system", "content": f"""
             You are an expert resume writer with over 20 years of experience working with job seekers trying to land new roles at their dream companies. You specialize in helping write resumes for people looking to transition to a new career path.
 
-            You will be provided with a client's target company, target job title, target job industry, top 3 job responsibilities at that target job, their resume, and their previous job title. Based on this information, please tailor the client's resume for their target job by adjusting the wording to match more closely with the target responsibilities of the target company. Do not make information up.
+            You will be provided with a client's target company, target job title, target job industry, top 3 job responsibilities at that target job, their resume, and their previous job title. Based on top 3 job responsibilities, please tailor the client's resume for their target job. Only adjust the client's resume wording, do not add additional information.
             
             Return the tailored resume in HTML that can easily be added into the inner HTML of a website. Only return the code, in the following format:
             <div>
