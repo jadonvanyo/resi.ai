@@ -1,13 +1,15 @@
 import os
 
 import openai
+from bs4 import BeautifulSoup
 from cs50 import SQL
 import datetime
 from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
 from flask_session import Session
+import html2text
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_fernet_instance, get_response, login_required, price_estimation, price_estimator_prompts, usd
+from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_response, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
 
 # Configure application
 app = Flask(__name__)
@@ -108,78 +110,60 @@ def index():
                 'status': 'error',
                 'message': 'No API key saved'
             })
-    
-        # TODO: Redirect the user to a loading screen while the functions work (use AJAX)
         
-        # TODO: Move all of this to helpers.py
+        # API call to get the 3 most important responsibilities from the description
+        imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()), request.form.get("industry"), request.form.get("jobdescription"))
         
-        # Create the first prompt for API call to get most important 
-        prompt = f"""
-            You are an expert resume writer with over 20 years of experience working with
-            job seekers trying to land a role in {request.form.get("industry")}.
-            Highlight the 3 most important responsibilities in this job description:
-            Job Description:
-            '''
-            {request.form.get("jobdescription")}
-            '''
-            """
+        # Convert the important responsibilities to html format
+        imp_resp_html = convert_imp_resp_to_html(decrypt_key(encrypted_api_key, get_fernet_instance()), imp_resp)
         
-        imp_resp = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.1)
+        # API call to get tailored resume from user information
+        tailored_resume_html = get_tailored_resume(
+            decrypt_key(encrypted_api_key, get_fernet_instance()), 
+            request.form.get("company"),
+            imp_resp, 
+            request.form.get("industry"),
+            request.form.get("jobtitle"),
+            request.form.get("prevjob"), 
+            resume
+        )
         
-        prompt = f"""
-            You are an expert resume writer with over 20 years of experience working with
-            job seekers trying to land a role in {request.form.get("industry")}. You specialize in helping
-            write resumes for a {request.form.get("prevjob")} looking to transition to a new career path 
-            in {request.form.get("industry")}.
+        # Convert HTML to text using beautiful soup for future use
+        tailored_resume = BeautifulSoup(tailored_resume_html).get_text()
+        
+        # prompt = f"""
+        #     You are an expert resume writer with over 20 years of experience working with job seekers trying to land a role in {request.form.get("industry")}. You specialize in helping write resumes for a {request.form.get("prevjob")} looking to transition to a new career path in {request.form.get("industry")}.
 
-            Based on these 3 most important responsibilities from the job description,
-            please tailor my resume for this {request.form.get("jobtitle")} position at
-            {request.form.get("company")}. Do not make information up.
+        #     Based on the 3 most important responsibilities from the job description listed below, please tailor my resume for this {request.form.get("jobtitle")} position at {request.form.get("company")}. Do not make information up.
 
-            3 Most important responsibilities: 
-            '''
-            {imp_resp}
-            '''
+        #     3 Most important responsibilities: 
+        #     '''
+        #     {imp_resp}
+        #     '''
 
-            Resume:
-            '''
-            {resume}
-            '''
-            """
+        #     Resume:
+        #     '''
+        #     {resume}
+        #     '''
+        #     """
         
-        tailored_resume = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.5)
+        # tailored_resume = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.5)
         
-        prompt = f"""
-            List out the differences between my original resume and the suggested draft \
-            in table format with 2 columns: Original and Updated. Be specific and list out \
-            exactly what was changed, down to the exact wording.
-
-            My Original:
-            '''
-            {resume}
-            '''
-
-            Suggested Draft:
-            '''
-            {tailored_resume}
-            '''
-            """
+        # TODO: Improve the differences comparison
         
-        differences = get_response(decrypt_key(encrypted_api_key, get_fernet_instance()), prompt, 0.3)
+        differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
         
-        # TODO: Create new resume database
+        # TODO: Create new resume database 
         
-        # TODO: Save the new resume in a new resume database
+        # TODO: Save the new resume in a new resume database (store the html versions)
         
-        # Render a new page with the 3 key responsibilities, differences, and tailored resume
-        # return render_template("tailored_resume.html", imp_resp=imp_resp, differences=differences, tailored_resume=tailored_resume)
-        
+        # Return the 3 key responsibilities, differences, and tailored resume to update the page
         return jsonify({
             'status': 'success',
             'message': 'Resume processed successfully',
-            'imp_resp': render_template_string(f'<p>{imp_resp}</p>'),
-            'tailored_resume': render_template_string(f'<p>{tailored_resume}</p>'),
-            'differences': render_template_string(f'<p>{differences}</p>')
+            'imp_resp': render_template_string(imp_resp_html),
+            'tailored_resume': render_template_string(tailored_resume_html),
+            'differences': render_template_string(differences)
         })
         
     # User reached route via GET (as by clicking a link or via redirect)
