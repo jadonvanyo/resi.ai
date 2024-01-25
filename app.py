@@ -1,11 +1,10 @@
 import os
 
-import openai
-from bs4 import BeautifulSoup
 from cs50 import SQL
 import datetime
 from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
 from flask_session import Session
+import markdown
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
@@ -119,22 +118,22 @@ def index():
         imp_resp_html = convert_imp_resp_to_html(decrypt_key(encrypted_api_key, get_fernet_instance()), imp_resp)
         
         # API call to get tailored resume from user information
-        tailored_resume_html = get_tailored_resume(
+        tailored_resume = get_tailored_resume(
             decrypt_key(encrypted_api_key, get_fernet_instance()), 
             request.form.get("company"),
             imp_resp, 
             request.form.get("industry"),
+            request.form.get("jobdescription"),
             request.form.get("jobtitle"),
             request.form.get("prevjob"), 
             resume
         )
         
-        # Convert HTML to text using beautiful soup for future use
-        tailored_resume = BeautifulSoup(tailored_resume_html).get_text()
-        
         # TODO: Improve the differences comparison (Potentially eliminate this feature)
-        
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
+        
+        # Change the markdown received from OpenAI to HTML
+        differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
         
         # TODO: Create new resume database 
         
@@ -145,8 +144,8 @@ def index():
             'status': 'success',
             'message': 'Resume processed successfully',
             'imp_resp': render_template_string(imp_resp_html),
-            'tailored_resume': render_template_string(tailored_resume_html),
-            'differences': render_template_string(differences)
+            'tailored_resume': render_template_string(tailored_resume),
+            'differences': render_template_string(differences_html)
         })
         
     # User reached route via GET (as by clicking a link or via redirect)
@@ -336,6 +335,14 @@ def api_key():
             # Return the account page with the API key
             return render_template("api_key.html", user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
         
+
+@app.route("/history")
+@login_required
+def history():
+    """Present the last 5 resumes the user has generated"""
+    # TODO: Display the last 5 resumes that the user has generated
+    # TODO: Display the date, name of the company, and maybe differences      
+    return apology("TODO", 403)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

@@ -12,7 +12,7 @@ def api_key_validation(user_api_key):
     # Try the user's API key with a test run
     try:
         completion = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-1106",
             messages=[
                 {
                     "role": "user",
@@ -61,7 +61,7 @@ def convert_imp_resp_to_html(api_key, text, temp=0.2):
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=[
             {"role": "system", "content": "You are a helpful frontend programming assistant. You will take user input text and convert it to HTML that can easily be added into the inner HTML of a website. Only return the code, nothing else."},
             {"role": "user", "content": """Based on the job description for a healthcare analytics position, the three most important responsibilities are: 
@@ -119,10 +119,13 @@ def get_imp_resp(api_key, industry, jobdescription, temp=0.5):
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=[
-            {"role": "user", "content": f"""
+            {"role": "system", "content": f"""
             You are an expert resume writer with over 20 years of experience working with job seekers trying to land a role in {industry}.
+            """
+            },
+            {"role": "user", "content": f"""
             Highlight the 3 most important responsibilities in this job description:
             Job Description:
             '''
@@ -137,17 +140,15 @@ def get_imp_resp(api_key, industry, jobdescription, temp=0.5):
     return completion.choices[0].message.content
 
 
-def get_differences(api_key, original_resume, tailored_resume, temp=0.2):
+def get_differences(api_key, original_resume, tailored_resume, temp=1):
     """Generate a list of the differences between two resumes from OpenAI"""
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=[
             {"role": "system", "content": f"""
-             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between the original resume and the updated resume in table format with 2 columns: Original and Updated. Be specific and list out exactly what wording was changed. Only list a sentence if it has been changed. 
-             
-             Return the table in HTML that can easily be added into the inner HTML of a website. Only return the code, nothing else.
+             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between wording in the original resume and the updated resume in table format with 2 columns: Original and Updated. Be specific and list out exactly what wording was changed. Only list a sentence if it has been changed. 
              """
             },
             {"role": "user", "content": f"""
@@ -164,45 +165,49 @@ def get_differences(api_key, original_resume, tailored_resume, temp=0.2):
              }
         ],
         temperature = temp,
+        top_p=0.9,
     )
     
     return completion.choices[0].message.content
     
 
-def get_tailored_resume(api_key, company, imp_resp, industry, jobtitle, prevjob, resume, temp=0.7):
+def get_tailored_resume(api_key, company, imp_resp, industry, jobdescription, jobtitle, prevjob, resume, temp=1):
     """Generate a tailored resume from OpenAI"""
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-1106-preview",
         messages=[
             {"role": "system", "content": f"""
-            You are an expert resume writer with over 20 years of experience working with job seekers trying to land new roles at their dream companies. You specialize in helping write resumes for people looking to transition to a new career path.
-
-            You will be provided with a client's target company, target job title, target job industry, top 3 job responsibilities at that target job, their resume, and their previous job title. Based on top 3 job responsibilities, please tailor the client's resume for their target job. Only adjust the client's resume wording, do not add additional information.
-            
-            Return the tailored resume in HTML that can easily be added into the inner HTML of a website. Only return the code, in the following format:
-            <div>
-                "Tailored Resume Here"
-            </div>"""
+            You are an expert resume writer with over 20 years of experience working with job seekers trying to land a role in {industry}.
+            """
             },
             {"role": "user", "content": f"""
-                Target Company: {company}
-                Target Job Title: {jobtitle}
-                Target Job Industry: {industry}
-                Previous Job Title: {prevjob}
-                Top 3 Job Responsibilities:
+                Highlight the 3 most important responsibilities in this job description:
+                Job Description:
                 '''
-                {imp_resp}
+                {jobdescription}
                 '''
-                My Resume:
+                """
+            },
+            {"role": "assistant", "content": f"""
+             {imp_resp}
+             """
+            },
+            {"role": "user", "content": f"""
+                Based on these 3 responsibilities from the job description, please tailor my resume for this {jobtitle} position at {company}. 
+                Do not add information from jobs that I did not work at.
+                Return only the tailored resume without any additional comments.
+
+                Here's my resume:
                 '''
                 {resume}
                 '''
                 """
-            }
+            },
         ],
         temperature = temp,
+        top_p = 0.8,
     )
     
     return completion.choices[0].message.content
@@ -214,7 +219,7 @@ def get_response(api_key, prompt, temp=0):
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=[{"role": "user", "content": prompt}],
         temperature=temp,
     )
@@ -325,7 +330,7 @@ def price_estimation(user_api_key, price_estimate_inputs, price_estimate_outputs
     
     # Count tokens for the inputs
     inputs = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=price_estimate_inputs,
         temperature=0.2,
         max_tokens=1,  # we're only counting input tokens here, so let's not waste tokens on the output
@@ -333,7 +338,7 @@ def price_estimation(user_api_key, price_estimate_inputs, price_estimate_outputs
     
     # Count tokens for the outputs
     outputs = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         messages=price_estimate_outputs,
         temperature=0.2,
         max_tokens=1,  # we're only counting input tokens here, so let's not waste tokens on the output

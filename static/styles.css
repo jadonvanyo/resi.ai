@@ -20,12 +20,6 @@ nav .navbar-brand
     width: auto;
 }
 
-/* Set the background color */
-/* body
-{
-    background-color: #2b3035;
-} */
-
 /* Adjust text color */
 h1, p
 {
@@ -105,16 +99,10 @@ h1, p
     justify-content: center;
 }
 
-/* Add a space between the checkbox and label */
-input[type="checkbox"] {
-    margin-right: 10px; /* Adjust the value as needed */
+/* Format the resume form OpenAI for white space and line wrap */
+#tailoredresume {
+    white-space: pre-line;
 }
-
-
-/* Initially hide any spinner animations */
-/* #loadingSpinner {
-    display: none;
-} */
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {
