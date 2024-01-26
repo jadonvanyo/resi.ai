@@ -145,10 +145,11 @@ def get_differences(api_key, original_resume, tailored_resume, temp=1):
     openai.api_key = f"{api_key}"
     
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4-1106-preview",
         messages=[
             {"role": "system", "content": f"""
-             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between wording in the original resume and the updated resume in table format with 2 columns: Original and Updated. Be specific and list out exactly what wording was changed. Only list a sentence if it has been changed. 
+             You are a helpful assistant who's purpose is to list out all of the wording differences between a original and updated resume. You will be provided with an original and updated resume and your task is to list out the differences between wording in the original resume and the updated resume in table format with 2 columns: Original and Updated. 
+             Be specific and list out exactly what wording was changed. 
              """
             },
             {"role": "user", "content": f"""

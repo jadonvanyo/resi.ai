@@ -5,6 +5,7 @@ import datetime
 from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
 from flask_session import Session
 import markdown
+import re
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
@@ -59,6 +60,7 @@ def index():
                 'message': 'Missing target company'
                 })
         
+        # TODO: Eliminate this field
         # Ensure that the user entered their current/previous job
         elif not request.form.get("prevjob"):
             return jsonify({
@@ -114,11 +116,11 @@ def index():
         # API call to get the 3 most important responsibilities from the description
         imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()), request.form.get("industry"), request.form.get("jobdescription"))
         
-        # Convert the important responsibilities to html format
-        imp_resp_html = convert_imp_resp_to_html(decrypt_key(encrypted_api_key, get_fernet_instance()), imp_resp)
+        # Add title to the section and convert important responsibilities to HTML using markdown
+        imp_resp_html = "<h2>Important Responsibilities</h2>" + markdown.markdown(imp_resp)
         
         # API call to get tailored resume from user information
-        tailored_resume = get_tailored_resume(
+        tailored_resume = "<h2>Tailored Resume</h2>" + get_tailored_resume(
             decrypt_key(encrypted_api_key, get_fernet_instance()), 
             request.form.get("company"),
             imp_resp, 
@@ -129,15 +131,47 @@ def index():
             resume
         )
         
-        # TODO: Improve the differences comparison (Potentially eliminate this feature)
+        # TODO: Improve the differences comparison (Use GPT-4?)
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
         
         # Change the markdown received from OpenAI to HTML
         differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
         
-        # TODO: Create new resume database 
+        # Add stripped table formatting to the table
+        differences_html = re.sub(r'<table>', '<table class="table table-striped">', differences_html)
         
-        # TODO: Save the new resume in a new resume database (store the html versions)
+        # Add bold column headers to the table and a title for the section
+        differences_html = "<h2>Differences</h2>" + re.sub(r'<th>', '<th scope="col">', differences_html)
+        
+        # Create name for the resume to be saved in the database
+        resume_name = request.form.get("company") + request.form.get("jobtitle") + "Resume"
+        
+        # TODO: Save the new resume in a new resume database (store the markdown versions)
+        # SELECT all saved resumes/cover letters to see if there is more than 4
+        if db.execute(
+            'SELECT COUNT(*) FROM history WHERE user_id = ?;',
+            session["user_id"]
+        )[0]['COUNT(*)'] > 4:
+            # If more than 4, UPDATE the oldest entry in history database with the newest entry
+            db.execute(
+                '''UPDATE history 
+                SET document_name = ?, company = ?, job_title = ?, document = ?, datetime = ?
+                WHERE user_id = ? AND datetime = (SELECT MIN(datetime) FROM history WHERE user_id = ?)
+                ''',
+                resume_name, 
+                request.form.get("company"), 
+                request.form.get("jobtitle"), 
+                tailored_resume, 
+                datetime.datetime.now(), 
+                session["user_id"],
+                session["user_id"]
+            )
+        # If not past the 5 document limit, INSERT the data into history
+        else:
+            db.execute(
+                'INSERT INTO history (user_id, document_name, company, job_title, document, datetime) VALUES(?, ?, ?, ?, ?, ?);',
+                session["user_id"], resume_name, request.form.get("company"), request.form.get("jobtitle"), tailored_resume, datetime.datetime.now()
+            )
         
         # Return the 3 key responsibilities, differences, and tailored resume to update the page
         return jsonify({

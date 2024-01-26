@@ -1,9 +1,8 @@
 import markdown
+import re
+from cs50 import SQL
+import datetime
 
-industry = "energy"
-company = "Apis Industries"
-prevjob = "Quality Engineer"
-jobtitle = "Mechanical Engineer"
             
 resume = """Summary: Adaptable and curious mechanical engineer with experience managing complex projects, working on cross-functional teams, and problem solving seeking to apply my skills to the Technical Program Manager Role at Microsoft. I am excited to bring my strong understanding of engineering fundamentals and analytical skills from my technical experience in the aerospace industry.   
 
@@ -50,8 +49,52 @@ differences = """
 | President’s List and Dean’s List (multiple semesters), Honors Scholarship, Kitarich, Peter & Carol, Swagelok Engineering Merit, John T. Pope Memorial, Choose Ohio First | President’s List, Dean’s List, Honors Scholarship, Swagelok Engineering Merit |
 """
 
+imp_resp = """
+The three most important responsibilities in this job description are:
 
+1. Ensuring availability, reliability, and maintenance of mechanical and HVAC systems to support manufacturing, clean room, and research and development activities.
+2. Designing and analyzing mechanical systems, equipment, and packaging and troubleshooting systematic issues to provide evaluation, recommendations, and solutions to resolve problems.
+3. Developing mechanical systems roadmap and asset replacement strategy to ensure reliability, redundancy, and capacity are available for expansion of existing facilities, renovation, and growth."""
 
-differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
-print(differences_html)
-print(differences)
+# differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
+# differences_html = re.sub(r'<table>', '<table class="table table-striped">', differences_html)
+# differences_html = re.sub(r'<th>', '<th scope="col">', differences_html)
+
+# imp_resp_html = markdown.markdown(imp_resp)
+
+# print(imp_resp_html)
+
+# Configure CS50 Library to use SQLite database
+db = SQL("sqlite:///resi.db")
+
+resume_name = 'TEST6'
+company = "TEST6"
+jobtitle = "TEST6"
+tailored_resume = "TEST6"
+user_id = 2
+
+# SELECT all saved resumes/cover letters to see if there is more than 4
+if db.execute(
+    'SELECT COUNT(*) FROM history WHERE user_id = ?;',
+    user_id
+)[0]['COUNT(*)'] > 4:
+    # If more than 4, UPDATE the oldest entry in history database with the newest entry
+    db.execute(
+        '''UPDATE history 
+        SET document_name = ?, company = ?, job_title = ?, document = ?, datetime = ?
+        WHERE user_id = ? AND datetime = (SELECT MIN(datetime) FROM history WHERE user_id = ?)
+        ''',
+        resume_name, 
+        company, 
+        jobtitle, 
+        tailored_resume, 
+        datetime.datetime.now(), 
+        user_id,
+        user_id
+    )
+# If not past the 5 document limit, just insert the data into history
+else:
+    db.execute(
+        'INSERT INTO history (user_id, document_name, company, job_title, document, datetime) VALUES(?, ?, ?, ?, ?, ?);',
+        user_id, resume_name, company, jobtitle, tailored_resume, datetime.datetime.now()
+    )
