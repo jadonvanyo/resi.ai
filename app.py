@@ -131,7 +131,10 @@ def index():
             resume
         )
         
-        # TODO: Improve the differences comparison (Use GPT-4?)
+        # Format the tailored resume for HTML
+        tailored_resume_html = "<h2>Tailored Resume</h2>" + tailored_resume
+        
+        # API call to get the differences comparison between old and new resumes
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
         
         # Change the markdown received from OpenAI to HTML
@@ -144,9 +147,8 @@ def index():
         differences_html = "<h2>Differences</h2>" + re.sub(r'<th>', '<th scope="col">', differences_html)
         
         # Create name for the resume to be saved in the database
-        resume_name = request.form.get("company") + request.form.get("jobtitle") + "Resume"
+        resume_name = request.form.get("company") + " " + request.form.get("jobtitle") + " Resume"
         
-        # TODO: Save the new resume in a new resume database (store the markdown versions)
         # SELECT all saved resumes/cover letters to see if there is more than 4
         if db.execute(
             'SELECT COUNT(*) FROM history WHERE user_id = ?;',
@@ -166,6 +168,7 @@ def index():
                 session["user_id"],
                 session["user_id"]
             )
+            
         # If not past the 5 document limit, INSERT the data into history
         else:
             db.execute(
@@ -178,7 +181,7 @@ def index():
             'status': 'success',
             'message': 'Resume processed successfully',
             'imp_resp': render_template_string(imp_resp_html),
-            'tailored_resume': render_template_string(tailored_resume),
+            'tailored_resume': render_template_string(tailored_resume_html),
             'differences': render_template_string(differences_html)
         })
         
@@ -283,6 +286,7 @@ def account():
                     request.form.get("resume"), session["user_id"]
                 )
         
+        # TODO: Add alert for when any element is successfully updated (Maybe)
         # After all updates are made, redirect the user to the updated account page
         return redirect("/account")
     
@@ -350,7 +354,8 @@ def api_key():
                 "UPDATE users SET api_key = ? WHERE id = ?;",
                 encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
             )
-            
+        
+        # TODO: Add alert for when the API key is successfully updated (Maybe)
         # Redirect to the main page
         return redirect("/")
 
@@ -374,9 +379,13 @@ def api_key():
 @login_required
 def history():
     """Present the last 5 resumes the user has generated"""
-    # TODO: Display the last 5 resumes that the user has generated
-    # TODO: Display the date, name of the company, and maybe differences      
-    return apology("TODO", 403)
+    # SELECT the document history for a user
+    history = db.execute(
+        "SELECT * FROM history WHERE user_id= ? ORDER BY datetime DESC;",
+        session["user_id"]
+    )
+    # Display the last 5 documents that the user has generated 
+    return render_template("history.html", history=history)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -431,6 +440,8 @@ def logout():
 @app.route("/price_estimator", methods=["GET", "POST"])
 @login_required
 def price_estimator():
+    """Allow the user to estimate how much it will cost to generate a resume"""
+    # TODO: Update this from all the changes on the updates
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure a job description was entered

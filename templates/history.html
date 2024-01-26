@@ -5,10 +5,31 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container text-area">
+    <div class="mb-5">
+        <h1>Document History</h1>
         <p>
-            <!-- TODO: Create a history of previous resumes the user has submitted -->
+            Your 5 most prevoiusly generated documents will be stored here in case you would like to go back to look at what a previous generation may have produced.
         </p>
-        <a class="btn btn-primary" href="/Account" role="button">Enter API Key</a>
+    </div>
+
+    <!-- TODO: Improve the view on mobile (eliminate the Target Company and Job) -->
+    <div class="accordion accordion-flush mb-4" id="accordionDocuments">
+        {% for item in history %}
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ item.id }}" aria-expanded="false" aria-controls="flush-collapse{{ item.id }}">
+                  <span class="label-spacing">{{ item.document_name }}</span>
+                  <span class="label-spacing">Target Company: {{ item.company }}</span>
+                  <span class="label-spacing">Target Job Title: {{ item.job_title }}</span>
+                  <span class="label-spacing">Date Generated: {{ item.datetime }}</span>
+                </button>
+              </h2>
+              <div id="flush-collapse{{ item.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionDocuments">
+                <div class="accordion-body resume-display">
+                    {{ item.document }}
+                </div>
+              </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

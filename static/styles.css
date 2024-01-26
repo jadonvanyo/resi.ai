@@ -99,9 +99,14 @@ h1, p
     justify-content: center;
 }
 
-/* Format the resume form OpenAI for white space and line wrap */
-#tailoredresume {
+/* Class for displaying markdown resumes */
+.resume-display {
     white-space: pre-line;
+}
+
+/* Label spacing for any elements that require spacing */
+.label-spacing {
+    margin-right: 2rem;
 }
 
 /* Media query for mobile devices */
