@@ -24,7 +24,7 @@
         </div>
         <div class="mb-3">
             <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
-            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume">{{ resume }}</textarea>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" maxlength="4500" name="resume" rows="10">{{ resume }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>

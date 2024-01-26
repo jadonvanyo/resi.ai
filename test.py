@@ -4,13 +4,22 @@ from cs50 import SQL
 import datetime
 
             
-resume = """Summary: Adaptable and curious mechanical engineer with experience managing complex projects, working on cross-functional teams, and problem solving seeking to apply my skills to the Technical Program Manager Role at Microsoft. I am excited to bring my strong understanding of engineering fundamentals and analytical skills from my technical experience in the aerospace industry.   
+resume = """
+Summary: Adaptable and curious mechanical engineer with experience managing complex projects, working on cross-functional teams, and problem solving seeking to apply my skills to the Technical Program Manager Role at Microsoft. I am excited to bring my strong understanding of engineering fundamentals and analytical skills from my technical experience in the aerospace industry.   
 
 Key Skills:
-Microsoft Office Suite			 Cross-Functional Team Work		          Python
-Scrum & Agile Training			 Geometric Dimensioning & Tolerancing	          MATLAB/Simulink
-Strategic Planning			 Failure Analysis	                       		          SolidWorks
-Technical Report Writing		 	 Remote Team Work			          Soldering
+Microsoft Office Suite			 
+Cross-Functional Team Work		          
+Python
+Scrum & Agile Training			 
+Geometric Dimensioning & Tolerancing	          
+MATLAB/Simulink
+Strategic Planning			 
+Failure Analysis	                       		          
+SolidWorks
+Technical Report Writing		 	 
+Remote Team Work			          
+Soldering
 
 Technical Experience:
 Component Repair Technologies | Mentor, OH | Quality Engineer | June 2021-June 2023
@@ -31,6 +40,18 @@ Preformed testing to ensure designs meet stress, tolerance, and failure requirem
 Designed and implemented testing equipment that increased cycle durability testing capacity by 33%
 Established a storage system that optimized storage process and increased capacity by 25%
 Designed and analyzed new actuator clamp band design geometries in Creo Parametric to improve the overall sealing by 8%
+
+Education: 
+The University of Akron, Akron OH				           		 		    Graduation: May 2021
+Bachelor of Science in Mechanical Engineering, Grade Point Average: 3.990/4.000, Williams Honors College Scholar
+Technical Courses: Tech Start-ups: Product Market Fit, Concepts of Design, Technical Report Writing
+Awards: President’s List and Dean’s List (multiple semesters), Honors Scholarship, Kitarich, Peter & Carol, Swagelok Engineering Merit, John T. Pope Memorial, Choose Ohio First
+
+Other Experience:
+Real Estate Investment and Management | Cleveland, OH | Jul 2022-Present | Investor and Manager 
+Find, analyze, negotiate, fund, rehab, and manage 5 real estate investment properties in the greater Cleveland area
+Panda Express | Cuyahoga Falls, OH | Aug 2017-May 2021 | Counter Help/Cook 
+Delighted customers, served, prepared, and cooked food, ran cash registers, cleaned, and raised $1000+ for local charities
 """
 
 differences = """
@@ -64,37 +85,4 @@ The three most important responsibilities in this job description are:
 
 # print(imp_resp_html)
 
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///resi.db")
-
-resume_name = 'TEST6'
-company = "TEST6"
-jobtitle = "TEST6"
-tailored_resume = "TEST6"
-user_id = 2
-
-# SELECT all saved resumes/cover letters to see if there is more than 4
-if db.execute(
-    'SELECT COUNT(*) FROM history WHERE user_id = ?;',
-    user_id
-)[0]['COUNT(*)'] > 4:
-    # If more than 4, UPDATE the oldest entry in history database with the newest entry
-    db.execute(
-        '''UPDATE history 
-        SET document_name = ?, company = ?, job_title = ?, document = ?, datetime = ?
-        WHERE user_id = ? AND datetime = (SELECT MIN(datetime) FROM history WHERE user_id = ?)
-        ''',
-        resume_name, 
-        company, 
-        jobtitle, 
-        tailored_resume, 
-        datetime.datetime.now(), 
-        user_id,
-        user_id
-    )
-# If not past the 5 document limit, just insert the data into history
-else:
-    db.execute(
-        'INSERT INTO history (user_id, document_name, company, job_title, document, datetime) VALUES(?, ?, ?, ?, ?, ?);',
-        user_id, resume_name, company, jobtitle, tailored_resume, datetime.datetime.now()
-    )
+print(len(resume))

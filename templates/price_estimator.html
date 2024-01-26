@@ -15,12 +15,12 @@
 <form action="/price_estimator" method="post">        
     <div class="mb-3">
         <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
-        <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription" required></textarea>
+        <textarea class="form-control" id="jobarea" placeholder="Target job description" maxlength="3500" name="jobdescription" rows="10" required></textarea>
     </div>
 
     <div class="mb-3">
         <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
-        <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume">{{ resume }}</textarea>
+        <textarea class="form-control" id="resumearea" placeholder="Existing resume" maxlength="4500" name="resume" rows="10" required>{{ resume }}</textarea>
     </div>
 
     <div class="mb-3">

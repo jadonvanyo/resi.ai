@@ -8,7 +8,9 @@ import markdown
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, convert_imp_resp_to_html, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+
+# TODO: Set length limits on any inputs
 
 # Configure application
 app = Flask(__name__)
@@ -75,11 +77,18 @@ def index():
                 'message': 'Missing job description'
             })
             
-        # Check that the user entered a sufficiently long job description
-        elif len(request.form.get("jobdescription")) < 250:        
+        # Check if the job description is too short
+        elif len(request.form.get("jobdescription")) < 500:        
             return jsonify({
                 'status': 'error',
-                'message': 'Job Description too short'
+                'message': f'Job Description too short. Characters: {len(request.form.get("jobdescription"))} Minimum: 500'
+            })
+            
+        # Check that the job description is too long
+        elif len(request.form.get("jobdescription")) > 3500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 3500'
             })
         
         # Ensure that the user entered a resume
@@ -89,11 +98,18 @@ def index():
                 'message': 'Missing resume'
             })
         
-        # Check that the user entered a sufficiently long resume
+        # Check that the resume is long enough
         elif len(request.form.get("resume")) < 1500:        
             return jsonify({
                 'status': 'error',
-                'message': 'Resume too short'
+                'message': f'Resume too short. Characters: {len(request.form.get("resume"))} Minimum: 1500'
+            })
+            
+        # Check that the resume is short enough
+        elif len(request.form.get("resume")) > 4500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Resume too long. Characters: {len(request.form.get("resume"))} Limit: 4500'
             })
         
         # Store resume if the user entered a resume
@@ -110,17 +126,16 @@ def index():
                 'status': 'error',
                 'message': 'No API key saved'
             })
-            
-        # TODO: Token count checks to ensure none of the token counts exceed the limit
         
         # API call to get the 3 most important responsibilities from the description
         imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()), request.form.get("industry"), request.form.get("jobdescription"))
+        print(imp_resp)
         
         # Add title to the section and convert important responsibilities to HTML using markdown
         imp_resp_html = "<h2>Important Responsibilities</h2>" + markdown.markdown(imp_resp)
         
         # API call to get tailored resume from user information
-        tailored_resume = "<h2>Tailored Resume</h2>" + get_tailored_resume(
+        tailored_resume = get_tailored_resume(
             decrypt_key(encrypted_api_key, get_fernet_instance()), 
             request.form.get("company"),
             imp_resp, 
@@ -136,6 +151,7 @@ def index():
         
         # API call to get the differences comparison between old and new resumes
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
+        print(differences)
         
         # Change the markdown received from OpenAI to HTML
         differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
@@ -441,20 +457,32 @@ def logout():
 @login_required
 def price_estimator():
     """Allow the user to estimate how much it will cost to generate a resume"""
-    # TODO: Update this from all the changes on the updates
+    # TODO: Try to figure out why this is so off
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure a job description was entered
         if not request.form.get("jobdescription"):
             return apology("must provide job description", 400)
         
+        # Check that the job description is long enough
+        elif len(request.form.get("jobdescription")) < 500:
+            return apology("job description too short", 400)
+        
+        # Check that the job description is not too long
+        elif len(request.form.get("jobdescription")) > 3500:
+            return apology("job description too long", 400)
+        
         # Ensure a resume was submitted
         elif not request.form.get("resume"):
             return apology("must provide a resume", 400)
         
-        # Check that the user entered a sufficiently long resume
+        # Check that the resume is long enough
         elif len(request.form.get("resume")) < 1500:
                 return apology("resume too short", 400)
+            
+        # Check that the resume is not too long
+        elif len(request.form.get("resume")) > 4500:
+                return apology("resume too long", 400)
             
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(

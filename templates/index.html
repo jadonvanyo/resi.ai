@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block main %}
-    <!-- TODO: Set the textareas to auto resize as the user types -->
     <div class="mb-5">
         <h1>Tailored Resume</h1>
         <p>Just copy and paste all the necessary information and get a resume tailored specifically for the job in seconds!
@@ -37,12 +36,12 @@
 
         <div class="mb-3">
             <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
-            <textarea class="form-control" id="jobarea" placeholder="Target job description" name="jobdescription" required></textarea>
+            <textarea class="form-control" id="jobarea" placeholder="Target job description" maxlength="3500" name="jobdescription" required rows="10"></textarea>
         </div>
 
         <div class="mb-3">
             <label for="resumearea" class="form-label">Copy and paste your existing resume below</label>
-            <textarea class="form-control" id="resumearea" placeholder="Existing resume" name="resume" required>{{ resume }}</textarea>
+            <textarea class="form-control" id="resumearea" placeholder="Existing resume" maxlength="4500" name="resume" required rows="10">{{ resume }}</textarea>
         </div>
 
         <div class="mb-3">
