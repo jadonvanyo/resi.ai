@@ -12,15 +12,12 @@
         </p>
     </div>
 
-    <!-- TODO: Improve the view on mobile (eliminate the Target Company and Job) -->
     <div class="accordion accordion-flush mb-4" id="accordionDocuments">
         {% for item in history %}
             <div class="accordion-item">
               <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ item.id }}" aria-expanded="false" aria-controls="flush-collapse{{ item.id }}">
                   <span class="label-spacing">{{ item.document_name }}</span>
-                  <span class="label-spacing">Target Company: {{ item.company }}</span>
-                  <span class="label-spacing">Target Job Title: {{ item.job_title }}</span>
                   <span class="label-spacing">Date Generated: {{ item.datetime }}</span>
                 </button>
               </h2>
