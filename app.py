@@ -10,8 +10,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
 
-# TODO: Set length limits on any inputs
-
 # Configure application
 app = Flask(__name__)
 
@@ -81,14 +79,6 @@ def index():
             return jsonify({
                 'status': 'error',
                 'message': 'Target Company too long'
-            })
-        
-        # TODO: Eliminate this field
-        # Ensure that the user entered their current/previous job
-        elif not request.form.get("prevjob"):
-            return jsonify({
-                'status': 'error',
-                'message': 'Missing current/previous job'
             })
         
         # Ensure that the user entered a job description
@@ -163,7 +153,6 @@ def index():
             request.form.get("industry"),
             request.form.get("jobdescription"),
             request.form.get("jobtitle"),
-            request.form.get("prevjob"), 
             resume
         )
         

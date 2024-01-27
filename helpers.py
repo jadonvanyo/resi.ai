@@ -172,7 +172,7 @@ def get_differences(api_key, original_resume, tailored_resume, temp=1):
     return completion.choices[0].message.content
     
 
-def get_tailored_resume(api_key, company, imp_resp, industry, jobdescription, jobtitle, prevjob, resume, temp=1):
+def get_tailored_resume(api_key, company, imp_resp, industry, jobdescription, jobtitle, resume, temp=1):
     """Generate a tailored resume from OpenAI"""
     openai.api_key = f"{api_key}"
     
