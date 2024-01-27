@@ -109,6 +109,22 @@ h1, p
     margin-right: 2rem;
 }
 
+/* Adjust images for the API key page */
+.api-key-image {
+    height: auto; 
+    width: 100%; 
+    object-fit: contain
+}
+
+/* Captions for figures */
+figcaption {
+    color: gray;
+    font-size: 0.8rem;
+    font-style: italic;
+    padding: 2px;
+    text-align: center;
+  }
+
 /* Media query for mobile devices */
 @media (max-width: 768px) {
     .container .centered-image

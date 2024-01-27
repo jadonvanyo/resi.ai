@@ -6,13 +6,43 @@
 
 {% block main %}
     <div class="container text-area">
+        <h1>Setting Up Your OpenAI API Key</h1>
         <p>
-            <!-- TODO: Create a walktrough of how to get their API Key -->
+            Setting up your OpenAI API key is simple and only takes a few minutes. Start by going to 
+            OpenAI's <a href="https://openai.com/">website</a> and select login or sign up. From there,
+            you'll want to select the "API" card when prompted. You may need to relogin to get this section 
+            if you just registered for an account.
+        </p>
+        <figure class="mb-3 mt-3">
+            <img src="../static/openai-api-selection.png" class="rounded api-key-image" alt="API Selection Card">
+            <figcaption>Selection for ChatGPT or API from OpenAI</figcaption>
+        </figure>
+        <p>
+            After selecting the API section, navigate to the left side bar and select API keys from the menu. It should be
+            the lock symbol.
+        </p>
+        <figure class="mb-3 mt-3">
+            <img src="../static/openai-api-keys.png" class="rounded api-key-image" alt="API Keys">
+            <figcaption>Side menu to access OpenAI's API keys</figcaption>
+        </figure>
+        <p>
+            Select the "+ Create new secret key" button, name your new secret key "resi.ai", and click the "Create secret key"
+            button. This will gernerate a secret key that you cannot give to anyone. Copy that secret key and paste it into the
+            API Key input box below. Resi.ai will encrypt your key so that only you can access it.
+        </p>
+        <figure class="mb-3 mt-3">
+            <img src="../static/openai-api-creation.png" class="rounded api-key-image" alt="API Key Creation">
+            <figcaption>Side menu to access OpenAI's API keys</figcaption>
+        </figure>
+        <p>
+            If your secret key is compromised, or if you ever want to create another key for any reason, just follow the steps
+            above to create another key. You can add funds to your OpenAI account from this point. Usually, $5 is a good place
+            to start, and you can add more as you need.
         </p>
     </div>
 
     <form action="/api_key" method="post">
-        <div class="form-container">
+        <div class="form-container mt-3">
             <div class="form-floating mb-3">
                 <input autofill="off" type="password" class="form-control" id="floatingAPI" placeholder="API Key" name="user_api_key" required value={{ user_api_key }}>
                 <label for="floatingAPI">API Key</label>
