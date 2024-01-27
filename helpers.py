@@ -386,7 +386,7 @@ def price_estimation(user_api_key, price_estimate_inputs, price_estimate_outputs
     )
     
     # Calculate the total price to tailor the resume
-    total_cost = (((inputs.usage.prompt_tokens) / 1000) * 0.01) + (((outputs.usage.prompt_tokens) / 1000) * 0.03)
+    total_cost = ((inputs.usage.prompt_tokens)* 0.01) + ((outputs.usage.prompt_tokens) * 0.03) / 1000
 
     return total_cost
 

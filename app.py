@@ -47,12 +47,26 @@ def index():
                 'status': 'error',
                 'message': 'Missing target job title'
             })
+        
+        # Ensure the job title is not too long
+        elif len(request.form.get("jobtitle")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Job Title too long'
+            })
 
         # Ensure that the user entered an industry
         elif not request.form.get("industry"):
             return jsonify({
                 'status': 'error',
                 'message': 'Missing target industry'
+            })
+            
+        # Ensure the industry is not too long
+        elif len(request.form.get("industry")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Industry too long'
             })
         
         # Ensure that the user entered a company
@@ -61,6 +75,13 @@ def index():
                 'status': 'error',
                 'message': 'Missing target company'
                 })
+            
+        # Ensure the company name is not too long
+        elif len(request.form.get("company")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Company too long'
+            })
         
         # TODO: Eliminate this field
         # Ensure that the user entered their current/previous job
