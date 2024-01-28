@@ -383,6 +383,9 @@ def api_key():
         
         # TODO: Add alert for when the API key is successfully updated (Maybe)
         # Redirect to the main page
+        return jsonify({
+            'status': 'success',
+        })
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)

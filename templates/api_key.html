@@ -41,7 +41,7 @@
         </p>
     </div>
 
-    <form action="/api_key" method="post">
+    <form action="/api_key" id="apikeyForm" method="post">
         <div class="form-container mt-3">
             <div class="form-floating mb-3">
                 <input autofill="off" type="password" class="form-control" id="floatingAPI" placeholder="API Key" name="user_api_key" required value={{ user_api_key }}>
@@ -50,4 +50,48 @@
         </div>
         <button type="submit" class="btn btn-primary">Enter API Key</button>
     </form>
+    <div id="liveAlertPlaceholder"></div>
+{% endblock %}
+
+{% block script %}
+$(document).ready(function() {
+    const appendAlert = (message, type) => {
+        const wrapper = $(`
+            <div class="alert alert-${type} alert-dismissible" role="alert">
+                <div>${message}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `);
+
+        $('#liveAlertPlaceholder').append(wrapper);
+    };
+
+    $('#apikeyForm').submit(function(event) {
+        event.preventDefault(); // Prevent the form from submitting via the browser
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // Serialize form data
+            success: function(response) {
+
+                if(response.status === 'success') {
+                    // Append the alert when the return is successful
+                    appendAlert('API key successfully updated!', 'success')
+                }
+
+                else if(response.status === 'error') {
+                    // Display a meeasge about what went wrong
+                    alert(response.message)
+                }
+            },
+            error: function() {
+                // Handle error
+                alert('An error occurred. Please try again.');
+            },
+        });
+    });
+});
 {% endblock %}
