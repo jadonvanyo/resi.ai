@@ -286,7 +286,7 @@ def account():
         
         # TODO: The email update is not working for some reason
         # Check if the user has entered an email that is different than their previous email
-        elif request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
+        if request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
             # UPDATE the user's email in users
             db.execute(
                 "UPDATE users SET email = ? WHERE id = ?;",
