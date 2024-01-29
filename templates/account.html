@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/account" method="post">
+    <form action="/account" class="mb-4" id="accountForm" method="post">
         <div class="form-container mb-3">
             <label for="InputEmail" class="form-label">Email address</label>
             <input type="email" class="form-control" id="InputEmail" name="email" value={{ email }} required>
@@ -28,4 +28,49 @@
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
+
+    <div id="liveAlertPlaceholder"></div>
+{% endblock %}
+
+{% block script %}
+$(document).ready(function() {
+    const appendAlert = (message, type) => {
+        const wrapper = $(`
+            <div class="alert alert-${type} alert-dismissible" role="alert">
+                <div>${message}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `);
+
+        $('#liveAlertPlaceholder').append(wrapper);
+    };
+
+    $('#accountForm').submit(function(event) {
+        event.preventDefault(); // Prevent the form from submitting via the browser
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(), // Serialize form data
+            success: function(response) {
+
+                if(response.status === 'success') {
+                    // Append the alert when the return is successful
+                    appendAlert(response.message, 'success')
+                }
+
+                else if(response.status === 'error') {
+                    // Display a meeasge about what went wrong
+                    appendAlert(response.message, 'danger')
+                }
+            },
+            error: function() {
+                // Handle error
+                alert('An error occurred. Please try again.');
+            },
+        });
+    });
+});
 {% endblock %}

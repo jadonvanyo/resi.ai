@@ -229,21 +229,38 @@ def about():
 @app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
+    """Account page for the users to view and update their profile information"""
+
+    # Empty successful update variable to record what the user has updated
+    success_response = ""
+    
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure email was submitted
         if not request.form.get("email"):
-            return apology("must provide email", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Must provide an Email.'
+            })
+            # return apology("must provide email", 400)
         
         # Ensure an API key was submitted
         elif not request.form.get("user_api_key"):
-            return apology("must provide API Key", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Must provide API Key.'
+            })
+            # return apology("must provide API Key", 400)
         
         # Check if the user entered a new password
         elif request.form.get("password") or request.form.get("confirmation"):
             # Determine if the password and confirmation do not match
             if request.form.get("password") != request.form.get("confirmation"):
-                return apology("new password and confirmation must match", 403)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'New password and confirmation must match.'
+                })
+                # return apology("new password and confirmation must match", 403)
             
             # SELECT the users hash from users
             old_hash = (db.execute(
@@ -252,14 +269,22 @@ def account():
             
             # Check if the password matches the password the user already has
             if check_password_hash(old_hash, request.form.get("password")):
-                return apology("password already in use", 403)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Password already in use.'
+                })
+                # return apology("password already in use", 403)
             
             # UPDATE the user's password in users if all checks pass
             db.execute(
                 "UPDATE users SET hash = ? WHERE id = ?;",
                 generate_password_hash(request.form.get("password")), session["user_id"]
             )
+            
+            # Add the password to the successful update variable
+            success_response += "Password"
         
+        # TODO: The email update is not working for some reason
         # Check if the user has entered an email that is different than their previous email
         elif request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
             # UPDATE the user's email in users
@@ -267,6 +292,13 @@ def account():
                 "UPDATE users SET email = ? WHERE id = ?;",
                 request.form.get("email"), session["user_id"]
             )
+            
+            # Add the email to the successful response if updated
+            if not success_response:
+                success_response += "Email"
+            
+            else:
+                success_response += ", Email"
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
@@ -277,13 +309,24 @@ def account():
         if not encrypted_api_key:
              # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
-                return apology("must provide a valid API Key", 400)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Must provide a valid API Key.'
+                })
+                # return apology("must provide a valid API Key", 400)
             
             # Update the users encrypted API key in the users database
             db.execute(
                 "UPDATE users SET api_key = ? WHERE id = ?;",
                 encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
             )
+            
+            # Add the API Key to the successful response if updated
+            if not success_response:
+                success_response += "API Key"
+            
+            else:
+                success_response += ", API Key"
         
         # Check if the user has entered an API key different than the one previously in the database
         elif request.form.get("user_api_key") != decrypt_key(
@@ -291,7 +334,11 @@ def account():
         ):
              # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
-                return apology("must provide a valid API Key", 400)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Must provide a valid API Key.'
+                })
+                # return apology("must provide a valid API Key", 400)
             
             # Update the users encrypted API key in the users database
             db.execute(
@@ -299,22 +346,48 @@ def account():
                 encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
             )
             
+            # Add the API Key to the successful response if updated
+            if not success_response:
+                success_response += "API Key"
+            
+            else:
+                success_response += ", API Key"
+            
         # Check if the user entered a resume
         if request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
                 session["user_id"]))[0]["resume"]:
             # Check that the user entered a sufficiently long resume
             if len(request.form.get("resume")) < 1500:
-                return apology("resume too short", 400)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Resume too short.'
+                })
+                # return apology("resume too short", 400)
             # UPDATE the users resume in users
             else:
                 db.execute(
                     "UPDATE users SET resume = ? WHERE id = ?;",
                     request.form.get("resume"), session["user_id"]
                 )
+                
+            # Add resume to the successful response if updated
+            if not success_response:
+                success_response += "Resume"
+            
+            else:
+                success_response += ", Resume"
         
-        # TODO: Add alert for when any element is successfully updated (Maybe)
-        # After all updates are made, redirect the user to the updated account page
-        return redirect("/account")
+        # Redirect the user to the same page if no updates were made
+        if not success_response:
+            return redirect("/account")
+        # Send alert message to the user with all the updates made
+        else:
+            success_response += " successfully updated!"
+            return jsonify({
+                'status': 'success',
+                'message': success_response
+            })
+        # return redirect("/account")
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:
