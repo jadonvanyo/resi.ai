@@ -348,7 +348,10 @@ def api_key():
     if request.method == "POST":
         # Ensure API Key was submitted
         if not request.form.get("user_api_key"):
-            return apology("must provide API Key", 400)
+            return jsonify({
+                'status': 'error',
+                'message': 'Must provide API Key.'
+            })
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
@@ -359,7 +362,10 @@ def api_key():
         if not encrypted_api_key:
             # Validate user's API Key        
             if not api_key_validation(request.form.get("user_api_key")):
-                return apology("must provide a valid API Key", 400)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Must provide a valid API key.'
+                })
             
             # Update the users encrypted API key in the users database
             db.execute(
@@ -373,7 +379,10 @@ def api_key():
         ):
              # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
-                return apology("must provide a valid API Key", 400)
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Must provide a Valid API Key.'
+                })
             
             # Update the users encrypted API key in the users database
             db.execute(
@@ -381,12 +390,10 @@ def api_key():
                 encrypt_key(request.form.get("user_api_key"), get_fernet_instance()), session["user_id"]
             )
         
-        # TODO: Add alert for when the API key is successfully updated (Maybe)
-        # Redirect to the main page
+        # Send alert to the user that their API key was successfully updated
         return jsonify({
             'status': 'success',
         })
-        return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:

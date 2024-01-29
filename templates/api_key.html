@@ -41,7 +41,7 @@
         </p>
     </div>
 
-    <form action="/api_key" id="apikeyForm" method="post">
+    <form action="/api_key" class="mb-4" id="apikeyForm" method="post">
         <div class="form-container mt-3">
             <div class="form-floating mb-3">
                 <input autofill="off" type="password" class="form-control" id="floatingAPI" placeholder="API Key" name="user_api_key" required value={{ user_api_key }}>
@@ -84,7 +84,7 @@ $(document).ready(function() {
 
                 else if(response.status === 'error') {
                     // Display a meeasge about what went wrong
-                    alert(response.message)
+                    appendAlert(response.message, 'danger')
                 }
             },
             error: function() {
