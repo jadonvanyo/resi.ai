@@ -1,4 +1,4 @@
-import os
+# import os
 
 from cs50 import SQL
 import datetime
@@ -9,6 +9,8 @@ import re
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+
+# TODO: style50
 
 # Configure application
 app = Flask(__name__)
@@ -23,6 +25,7 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///resi.db")
+
 
 @app.after_request
 def after_request(response):
@@ -72,7 +75,7 @@ def index():
             return jsonify({
                 'status': 'error',
                 'message': 'Missing target company'
-                })
+            })
             
         # Ensure the company name is not too long
         elif len(request.form.get("company")) > 50:
@@ -139,8 +142,8 @@ def index():
             })
         
         # API call to get the 3 most important responsibilities from the description
-        imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()), request.form.get("industry"), request.form.get("jobdescription"))
-        print(imp_resp)
+        imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()),
+                                request.form.get("industry"), request.form.get("jobdescription"))
         
         # Add title to the section and convert important responsibilities to HTML using markdown
         imp_resp_html = "<h2>Important Responsibilities</h2>" + markdown.markdown(imp_resp)
@@ -199,7 +202,8 @@ def index():
         else:
             db.execute(
                 'INSERT INTO history (user_id, document_name, company, job_title, document, datetime) VALUES(?, ?, ?, ?, ?, ?);',
-                session["user_id"], resume_name, request.form.get("company"), request.form.get("jobtitle"), tailored_resume, datetime.datetime.now()
+                session["user_id"], resume_name, request.form.get("company"), 
+                request.form.get("jobtitle"), tailored_resume, datetime.datetime.now()
             )
         
         # Return the 3 key responsibilities, differences, and tailored resume to update the page
@@ -284,7 +288,6 @@ def account():
             # Add the password to the successful update variable
             success_response += "Password"
         
-        # TODO: The email update is not working for some reason
         # Check if the user has entered an email that is different than their previous email
         if request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
             # UPDATE the user's email in users
@@ -302,12 +305,12 @@ def account():
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
-                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
             
         # Check if the user already has an API key saved
         if not encrypted_api_key:
-             # Validate user's API Key
+            # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
                 return jsonify({
                     'status': 'error',
@@ -332,7 +335,7 @@ def account():
         elif request.form.get("user_api_key") != decrypt_key(
             encrypted_api_key, get_fernet_instance()
         ):
-             # Validate user's API Key
+            # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
                 return jsonify({
                     'status': 'error',
@@ -355,7 +358,7 @@ def account():
             
         # Check if the user entered a resume
         if request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
-                session["user_id"]))[0]["resume"]:
+                                          session["user_id"]))[0]["resume"]:
             # Check that the user entered a sufficiently long resume
             if len(request.form.get("resume")) < 1500:
                 return jsonify({
@@ -396,7 +399,7 @@ def account():
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
-                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
         
         # SELECT the user's resume from users
@@ -428,7 +431,7 @@ def api_key():
         
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
-                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
         
         # Check if the user does not have an API key
@@ -450,7 +453,7 @@ def api_key():
         elif request.form.get("user_api_key") != decrypt_key(
             encrypted_api_key, get_fernet_instance()
         ):
-             # Validate user's API Key
+            # Validate user's API Key
             if not api_key_validation(request.form.get("user_api_key")):
                 return jsonify({
                     'status': 'error',
@@ -472,7 +475,7 @@ def api_key():
     else:
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
-                "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
         ))[0]["api_key"]
 
         # Return an Account page without the API key
@@ -495,6 +498,7 @@ def history():
     )
     # Display the last 5 documents that the user has generated 
     return render_template("history.html", history=history)
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -571,11 +575,11 @@ def price_estimator():
         
         # Check that the resume is long enough
         elif len(request.form.get("resume")) < 1500:
-                return apology("resume too short", 400)
+            return apology("resume too short", 400)
             
         # Check that the resume is not too long
         elif len(request.form.get("resume")) > 4500:
-                return apology("resume too long", 400)
+            return apology("resume too long", 400)
             
         # SELECT the user's encrypted API key from users
         encrypted_api_key = (db.execute(
@@ -587,10 +591,12 @@ def price_estimator():
             return apology("no saved api key", 400)
         
         # Call function to create the example prompts required a tailor the resume
-        price_estimate_inputs, price_estimate_outputs = price_estimator_prompts(request.form.get("jobdescription"), request.form.get("resume"))
+        price_estimate_inputs, price_estimate_outputs = price_estimator_prompts(
+            request.form.get("jobdescription"), request.form.get("resume"))
         
-        # Calculate the number of price needed for the total prompt
-        total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()), price_estimate_inputs, price_estimate_outputs)
+        # Calculate the price needed for the total prompt
+        total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()),
+                                      price_estimate_inputs, price_estimate_outputs)
         
         # Return template with the price estimate
         return render_template("price_estimate.html", total_cost=total_cost)
@@ -631,7 +637,7 @@ def register():
 
         # Insert new user into the database and remember which user has logged in
         session["user_id"] = db.execute("INSERT INTO users (email, hash) VALUES(?, ?);", 
-            request.form.get("email"), generate_password_hash(request.form.get("password")))
+                                        request.form.get("email"), generate_password_hash(request.form.get("password")))
 
         # Redirect to the API key page
         return redirect("/api_key")
