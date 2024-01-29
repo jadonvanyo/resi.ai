@@ -10,8 +10,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
 
-# TODO: style50
-
 # Configure application
 app = Flask(__name__)
 
