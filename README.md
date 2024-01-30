@@ -49,9 +49,40 @@ This route allows the user to update: email, password, OpenAI API Key, and resum
 
 When accessed using "POST", this route will ensure the user entered an email and OpenAI API Key. If the user has previously entered these values, they will autofill into the input boxes. The function then verifies that the passwords match if they were changed and the password is different from the one saved. Next, it ensures the email and/or OpenAI API Key are the same as what is in the database and if not, the email and/or API Key are updated. Finally the resume length is checked if it was entered and if it is within the length requirements, it is saved into he database.
 
-A message is then sen to the JavaScript using 'jsonify' to update the user with the errors or successful fields updated in the database.
+A message is then sent to the JavaScript using 'jsonify' to update the user with the errors or successful fields updated in the database.
 
 When accessing this route using "GET" the page will load with the required input boxes. If the user has previously entered an email, OpenAI Key, or resume, those fields will autofill in.
+
+#### API Key:
+This route allows the user to update their OpenAI API Key.
+
+When accessed using "POST", this route will ensure that the user entered an API Key. It will pull the user's Open API Key from the SQL database. If no API Key is found in the database, it will validate the user's entered API Key and save it into the database. If there is an API Key already in the database, it will verify that the entered API Key is different before validating and updating the database.
+
+A message is then sent to the JavaScript using 'jsonify' to update the user with the errors or successful fields updated in the database.
+
+When accessing this route using "GET" the page will render a template with instructions for how to get an OpenAI API Key and an input box for the API Key. If the user has previously entered an OpenAI API Key the input field will autofill in.
+
+#### History:
+This route will obtain all the documents the user has saved in the the database and render them in a template. The documents are displayed in descending order by date.
+
+#### Login:
+This route will login the user given the correct login information is given.
+
+When accessed using "POST", the route will check if the user has entered an email and password, then check the database to determine if the email is saved. If a matching email is found in the database, it will check that the password matches the one in the database for the given email and set the session to the user's id number before redirecting them to the index page.
+
+If any errors are found, the user will be redirected to an apology page explaining what went wrong.
+
+When accessing this route using "GET" the page will render a template with the login input boxes.
+
+#### Logout:
+This route will logout the user by clearing their session and redirecting them to the login page.
+
+#### Price Estimator:
+This route will take the job description and user's resume and determine a rough estimate of how much it would cost to generate a tailored resume.
+
+When accessed using "POST", the route will check that the user has entered a job description and resume that fall within certain length requirements. Next, it will lookup the user's OpenAI API Key in the database and use the 'price_estimator_prompts' function to get example input and output prompts for estimation. These prompts are then fed into the 'price_estimation' with the OpenAI API Key and a new page is rendered with the estimate price.
+
+When accessing this route using "GET" the page will render a template with input boxes for the job description and resume.  The resume input will autofill if a resume is saved in the system.
 
 ### helper.py:
 ### resi.db
