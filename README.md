@@ -84,6 +84,15 @@ When accessed using "POST", the route will check that the user has entered a job
 
 When accessing this route using "GET" the page will render a template with input boxes for the job description and resume.  The resume input will autofill if a resume is saved in the system.
 
+#### Register:
+This route allows the user to register using an email and password.
+
+When accessed using "POST", the route will check that the user entered an email, password, and confirmation of password. Next, it checks that the password and confirmation match and that the email is not already contained in the database. Finally, it sets the new session for the user and enters the email and hashed password into the database before redirecting the logged in user to the api_key route.
+
+If any errors are found, the user will be redirected to an apology page explaining what went wrong.
+
+When accessing this route using "GET" the page will render a template with the register input boxes.
+
 ### helper.py:
 ### resi.db
 
