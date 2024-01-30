@@ -128,9 +128,30 @@ This function will use OpenAI's API to generate the 3 most important job respons
 The function will take the an OpenAI `api_key`, `industry`, `jobdescription`, and `temp` that is automatically set to 0.5 for a balanced response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown. This function uses the gpt-3.5-turbo-1106 model for speed and low cost with out lose to accuracy.
 
 #### get_differences
-This function will use OpenAI's API to generate the 3 most important job responsibilities from the user's input and previous OpenAI generations.
+This function will use OpenAI's API to generate a table of the differences between the user's resume and the tailored resume from the user's input and previous OpenAI generations.
 
 The function will take the an OpenAI `api_key`, `original_resume`, `tailored_resume`, and `temp` that is automatically set to 1 for a more creative response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown for the differences between the original and tailored resume. This function uses the gpt-4-1106-preview model for increased accuracy and reliability in responses. The top_p is set to 0.9 to cut down some of the responses that the model considers to improve speed marginally.
+
+#### get_tailored_resume
+This function will use OpenAI's API to generate a tailored resume based on the user's input information and previous OpenAI generations.
+
+The function will take the an OpenAI `api_key`, `company`, `imp_resp`, `industry`, `jobdescription`, `jobtitle`, `resume`, and `temp` that is automatically set to 1 for a more creative response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown for a resume tailored to a specific job description. The entered information is used to improve the prompt for the model to improve the response for the user. This function uses the gpt-4-1106-preview model for increased accuracy and reliability in responses. The top_p is set to 0.8 to cut down some of the responses that the model considers to improve speed marginally.
+
+#### login_required
+This function will decorate any routes that require login. If the user is not logged in, they will be redirected to the login route.
+
+#### price_estimator_prompts
+This function takes a job description and resume and creates example input and output prompts that it would expect from tailoring a resume.
+
+The function will take a `jobdescription` and `resume` and generate two dictionaries: price_estimate_inputs and price_estimate_outputs. These dictionaries will contain the inputs and estimated outputs of the model to determine how many tokens the user is likely going to use.
+
+#### price_estimation
+This function takes an OpenAI API Key and a dictionary of potential inputs and outputs for tailoring a resume and returns the expected price of that API call.
+
+The function will take an OpenAI `user_api_key`, `price_estimate_inputs` and `price_estimate_outputs` and makes an API call to OpenAI with a max token response limit of 1 token. From this response, the function pulls the token count for the inputs and outputs using the gpt-4-1106-preview model and multiples the toke count for each by the price per 1k tokens for the gpt-4-1106-preview model and returns the sum.
+
+#### usd
+This function will format a value into United State's dollars.
 
 ### resi.db:
 This is the main SQL database that stores the user's email, password, OpenAI API Key, resume, and any generated documents. The database contains two tables: users and history. All information that is entered into the database is sanitized using the `?` operator to prevent against injection attacks.
@@ -166,8 +187,17 @@ Original versions of this application used gpt-3.5-turbo which resulted in inacc
 
 A consideration was made to fine tune a model to improve the results, but this would have been costly and similar results could be achieved using prompt engineering. Additionally, the model would have lost some of the customization that can be achieved with prompting. 
 
+There is room for additional improvements on the models with improved prompting or settings that could not be covered at this time.
+
 ### Prompts:
-The prompts used to 
+The prompts used to generate the resumes were derived from the following YouTube video by Jeff Su: [Land a Job using ChatGPT: The Definitive Guide!](https://www.youtube.com/watch?v=pmnY5V16GSE&t=317s). The prompts were adjusted to fit the adjustable needs of this project.
+
 The prompts have been designed to replicate how a sample conversation would go with ChatGPT, while having room to be customized to the user's particular situation.
-#### Security:
+
+### Security:
+Security was a major concern on this project. The goal was for the project to be secure while also openly accessible for open source.
+
+This was accomplished using hashes for the user's passwords so any database leaks would not result in passwords being leaked and using a secret key encryption to encrypt user's API Keys so that they cannot be decrypted by anyone other than the person who has set up the project.
+
+All inputs into the databases are also sanitized to protect against injection attacks.
 
