@@ -56,43 +56,6 @@ def apology(message, code=400):
     return render_template("apology.html", top=code, bottom=escape(message)), code
 
 
-def convert_imp_resp_to_html(api_key, text, temp=0.2):
-    """Function to call openAI to convert important responsibilities into an HTML format"""
-    openai.api_key = f"{api_key}"
-    
-    completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
-        messages=[
-            {"role": "system", "content": "You are a helpful frontend programming assistant. You will take user input text and convert it to HTML that can easily be added into the inner HTML of a website. Only return the code, nothing else."},
-            {"role": "user", "content": """Based on the job description for a healthcare analytics position, the three most important responsibilities are: 
-             Analyze and Interpret Data: This role involves analyzing and interpreting data from multiple sources, including healthcare providers, members/patients, and third-party data. The ability to extract valuable insights from extensive datasets is a crucial responsibility. 
-             Support Large-Scale Projects: The position requires supporting the execution of large-scale projects with limited direction from leadership. This includes managing multiple tasks and data review processes within targeted timelines, as well as identifying opportunities for process enhancements and automation.
-             Communicate Data-Driven Insights: Effective communication of data-driven insights and recommendations is vital. The job involves presenting findings and insights to both internal and external stakeholders, including non-technical business partners. This includes engaging with customers and business partners to gather requirements and validate results."""
-            },
-            {"role": "assistant", "content": """
-             <div>
-              <h2>Based on the job description for a healthcare analytics position, the three most important responsibilities are:</h2>
-              <ol>
-                <li>
-                    <strong>Analyze and Interpret Data:</strong> This role involves analyzing and interpreting data from multiple sources, including healthcare providers, members/patients, and third-party data. The ability to extract valuable insights from extensive datasets is a crucial responsibility.
-                </li>
-                <li>
-                    <strong>Support Large-Scale Projects:</strong> The position requires supporting the execution of large-scale projects with limited direction from leadership. This includes managing multiple tasks and data review processes within targeted timelines, as well as identifying opportunities for process enhancements and automation.
-                </li>
-                <li>
-                    <strong>Communicate Data-Driven Insights:</strong> Effective communication of data-driven insights and recommendations is vital. The job involves presenting findings and insights to both internal and external stakeholders, including non-technical business partners. This includes engaging with customers and business partners to gather requirements and validate results.
-                </li>
-              </ol>
-             </div>"""
-            },
-            {"role": "user", "content": text},
-        ],
-        temperature=temp,
-    )
-    
-    return completion.choices[0].message.content
-
-
 def decrypt_key(encrypted_key, fernet_instance):
     """Decrypt a user's API key"""
     return fernet_instance.decrypt(encrypted_key).decode()
