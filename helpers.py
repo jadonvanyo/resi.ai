@@ -192,6 +192,7 @@ def login_required(f):
 
     return decorated_function
 
+
 def price_estimator_prompts(jobdescription, resume):
     """Generate example input and output messages for the price estimation"""
     # Generate the example prompts for the inputs
@@ -327,6 +328,7 @@ def price_estimator_prompts(jobdescription, resume):
     
     return price_estimate_inputs, price_estimate_outputs
 
+
 def price_estimation(user_api_key, price_estimate_inputs, price_estimate_outputs):
     """Estimate the total price of the call to ChatGPT"""
     # Enter the users entered API key to into an open api
@@ -349,7 +351,7 @@ def price_estimation(user_api_key, price_estimate_inputs, price_estimate_outputs
     )
     
     # Calculate the total price to tailor the resume
-    total_cost = ((inputs.usage.prompt_tokens)* 0.01) + ((outputs.usage.prompt_tokens) * 0.03) / 1000
+    total_cost = (((inputs.usage.prompt_tokens)* 0.01) + ((outputs.usage.prompt_tokens) * 0.03)) / 1000
 
     return total_cost
 

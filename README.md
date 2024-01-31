@@ -201,3 +201,4 @@ This was accomplished using hashes for the user's passwords so any database leak
 
 All inputs into the databases are also sanitized to protect against injection attacks.
 
+Improvements could have been made to make the sections that are being given access to the AI safer. Character limits were implemented to deter user's from accidentally entering information and prevent them from adding too much information and overloading the context window of the model

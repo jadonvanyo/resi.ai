@@ -1,20 +1,20 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Home
+    Tailored Cover Letter
 {% endblock %}
 
 {% block main %}
     <div class="mb-5">
-        <h1>Tailored Resume</h1>
+        <h1>Tailored Cover Letter</h1>
         <p>
-            Just copy and paste all the necessary information and get a resume tailored specifically for the job in seconds!
+            Just copy and paste all the necessary information and get a cover letter tailored specifically for the job in seconds!
             For best results, ensure your resume does not have any fancy formatting or layouts. You can save your resume for
             easy access in the <a href="/account">Account</a> page.
         </p>
     </div>
 
-    <form action="/" id="resumeForm" method="post">        
+    <form action="/" id="coverletterForm" method="post">        
         <div class="mb-3 form-container">
             <label class="form-label" for="jobtitle">Target Job Title</label>
             <input type="text" class="form-control" id="jobtitle" maxlength="50" name="jobtitle" placeholder="Target Job Title" required>
@@ -61,7 +61,7 @@
 
 {% block script %}
 $(document).ready(function() {
-    $('#resumeForm').submit(function(event) {
+    $('#coverletterForm').submit(function(event) {
         event.preventDefault(); // Prevent the form from submitting via the browser
         var form = $(this);
         var url = form.attr('action');

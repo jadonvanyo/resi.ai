@@ -162,7 +162,6 @@ def index():
         
         # API call to get the differences comparison between old and new resumes
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
-        print(differences)
         
         # Change the markdown received from OpenAI to HTML
         differences_html = markdown.markdown(differences, extensions=['markdown.extensions.tables'])
@@ -610,7 +609,7 @@ def price_estimator():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
+    """Register a new user"""
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure email was submitted
@@ -643,4 +642,16 @@ def register():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
+
+
+@app.route("/tailored_cover_letter", methods=["GET", "POST"])
+@login_required
+def tailored_cover_letter():
+    """Create a tailored cover letter based on the user's inputs"""
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        return apology('TODO', 403)
     
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("tailored_cover_letter.html")
