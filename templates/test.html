@@ -1,29 +1,94 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
 
-{% block title %}
-    Test
-{% endblock %}
+<html lang="en" data-bs-theme="dark">
 
-{% block main %}
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-        <label class="form-check-label" for="exampleRadios1">
-        Default radio
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-        <label class="form-check-label" for="exampleRadios2">
-        Second default radio
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3" disabled>
-        <label class="form-check-label" for="exampleRadios3">
-        Disabled radio
-        </label>
-    </div>
-{% endblock %}
+    <head>
 
-{% block script %}
-{% endblock %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- http://getbootstrap.com/docs/5.3/ -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+        <!-- https://favicon.io/favicon-generator/ -->
+        <link href="../static/favicon.ico" rel="icon">
+
+        <link href="/static/styles.css" rel="stylesheet">
+
+        <title>Resi.ai: Test</title>
+
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-expand-md bg-dark" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <!-- https://favicon.io/logo-generator/ -->
+                    <img src="../static/faviconio-logo/logo-header.png" alt="Resi.ai Logo">
+                </a>
+                <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    {% if session["user_id"] %}
+                        <ul class="navbar-nav me-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/account">Account</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/api_key">Enter API</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/price_estimator">Price Estimator</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Tailored Resume</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/tailored_cover_letter">Tailored Cover Letter</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
+                        </ul>
+                        <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+                        </ul>
+                    {% else %}
+                        <ul class="navbar-nav ms-auto mt-2">
+                            <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <main class="container py-3 text-center">
+            <img src="https://stackoverflow.com/favicon.ico"
+                style="cursor:pointer;"
+                title="Stack Overflow">
+        </main>
+
+        <footer class="mb-5">
+
+            <p class="mb-3 small text-center">
+                Powered by <a href="https://openai.com/chatgpt">ChatGPT</a>
+            </p>
+
+            <form action="https://validator.w3.org/check" class="text-center" enctype="multipart/form-data" method="post" target="_blank">
+                <input name="doctype" type="hidden" value="HTML5">
+                <input name="fragment" type="hidden">
+                <input alt="Validate" src="/static/I_heart_validator.png" type="image"> <!-- https://validator.w3.org/ -->
+            </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Adapted from https://stackoverflow.com/a/10162353
+                    const html = '<!DOCTYPE ' +
+                    document.doctype.name +
+                    (document.doctype.publicId ? ' PUBLIC "' + document.doctype.publicId + '"' : '') +
+                    (!document.doctype.publicId && document.doctype.systemId ? ' SYSTEM' : '') +
+                    (document.doctype.systemId ? ' "' + document.doctype.systemId + '"' : '') +
+                    '>\n' + document.documentElement.outerHTML;
+                    document.querySelector('form[action="https://validator.w3.org/check"] > input[name="fragment"]').value = html;
+                });
+
+                {% block script %}{% endblock %}
+            </script>                
+        </footer>
+            
+    </body>
+
+</html>

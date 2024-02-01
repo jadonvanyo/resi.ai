@@ -97,7 +97,13 @@ h1, p
 .form-check {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
+
+/* Set the top margin for radio buttons to 0 */
+.form-check-input {
+    margin-top: 0em;
+    }
 
 /* Class for displaying markdown resumes */
 .resume-display {
@@ -128,6 +134,48 @@ figcaption {
 /* Add a space between the label and button */
 label {
     margin-left: .5rem;
+}
+
+/* Styling for the information icon */
+.info-icon {
+    margin-left: .4rem;
+    vertical-align: text-bottom;
+}
+
+/* Tooltip for information icons */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    opacity: 1;
+}
+
+/* Text Box for the tooltip */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Make unordered lists without a bottom margin for the tooltip */
+.tooltip .tooltiptext ul{
+    margin-bottom: 0rem;
+    text-align: left;
+}
+/* Show the tooltip when the user hovers over the info icon */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Media query for mobile devices */

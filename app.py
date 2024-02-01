@@ -547,6 +547,7 @@ def logout():
     return redirect("/")
 
 
+# TODO: Eliminate this section
 @app.route("/price_estimator", methods=["GET", "POST"])
 @login_required
 def price_estimator():

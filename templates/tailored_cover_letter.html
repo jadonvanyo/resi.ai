@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block main %}
+
     <div class="mb-5">
         <h1>Tailored Cover Letter</h1>
         <p>
@@ -45,10 +46,28 @@
         <div class="form-check">
             <input class="form-check-input" type="radio" name="coverletter" id="fullcoverletter" value="full" checked>
             <label class="form-check-label" for="fullcoverletter">Full Cover Letter</label>
+            <div class="tooltip">
+                <img class= "info-icon" src="../static/information-icon.png" alt="Info Icon">
+                <span class="tooltiptext">Generate a full length cover letter.</span>
+            </div>
         </div>
         <div class="form-check mb-3">
             <input class="form-check-input" type="radio" name="coverletter" id="partialcoverletter" value="partial">
             <label class="form-check-label" for="partialcoverletter">Partial Cover Letter</label>
+            <div class="tooltip">
+                <img class= "info-icon" src="../static/information-icon.png" alt="Info Icon">
+                <span class="tooltiptext">
+                    Generate a partial cover letter containing the following sections:
+                    <ul>
+                        <li>A hook</li>
+                        <li>Why you're interested</li>
+                        <li>Summary of skills and experience</li>
+                        <li>Understanding of challenges</li>
+                        <li>How you would add value</li>
+                        <li>Closing</li>
+                    <ul>
+                </span>
+            </div>
         </div>
 
         <div class="mb-3">
