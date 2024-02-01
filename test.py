@@ -342,6 +342,7 @@ api_key = ''
 industry = 'robotics'
 company = 'Remedy Robotics'
 title = 'Senior Mechanical Engineer'
+prevjob = 'Quality Engineer'
 
 # Call function to create the example prompts required a tailor the resume
 price_estimate_inputs, price_estimate_outputs = price_estimator_prompts(job, resume)
@@ -372,39 +373,33 @@ print(price_estimation(api_key,price_estimate_inputs, price_estimate_outputs))
 
 tailor_cover_letter_prompt = f"""
     You are currently working as a {prevjob} and you're applying for this {title} at {company}. Based on the job description and resume provided below, please write an amazing cover letter for this job. Please write the cover letter using the following format:
-    
+
     '''
     Introduction:
-    Your Name:
-    The Position You're Applying For:
-    The Company's Name:
-    How You Found Out About the Job (e.g., job posting, referral, company website):
     A Hook: [Write one sentence that uniquely ties your interest or background to the company or industry. For example, a personal connection to the company’s product, mission, or a notable achievement of the company.]
-   
+
     Why You're Interested in This Role and Company:
     [Write 2-3 sentences about what attracts you to this position and the company. Mention specific aspects of the company’s culture, values, or projects that resonate with you.]
-    
+
     Summary of Relevant Skills and Experience:
     [Considering the job description, list 2-3 of your skills or experiences that directly align with what the job requires. For each skill/experience, write a brief example that demonstrates how you've effectively used or developed this skill in a previous role or project.]
-    
+
     Highlighting Achievements:
     [Identify 1-2 key achievements in your career that are particularly relevant to the job. Describe these achievements, quantifying the impact if possible (e.g., increased sales by 20%, reduced process time by 30%).]
-    
+
     Your Understanding of the Role and Its Challenges:
     [Write 2-3 sentences showing your understanding of what the role entails and any specific challenges it might present, based on the job description or your research on the company.]
-    
+
     How You Would Add Value:
     [Explain how you would address these challenges or contribute to the role based on your skills and experiences. Be specific about how your unique attributes would benefit the team or company.]
-    
+
     Closing:
     Reiterate your enthusiasm for the opportunity.
     State your availability for an interview.
     Thank the reader for considering your application.
-    Professional Closing (e.g., Sincerely, Best regards),
-    Your Full Name.
     '''
-    
+
     Job Description: '''{job}'''
-    
+
     Resume: '''{resume}'''
 """

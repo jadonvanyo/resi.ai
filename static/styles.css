@@ -123,7 +123,12 @@ figcaption {
     font-style: italic;
     padding: 2px;
     text-align: center;
-  }
+}
+
+/* Add a space between the label and button */
+label {
+    margin-left: .5rem;
+}
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {

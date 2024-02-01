@@ -650,8 +650,121 @@ def tailored_cover_letter():
     """Create a tailored cover letter based on the user's inputs"""
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        return apology('TODO', 403)
+        # Ensure the user entered their previous job title
+        if not request.form.get("prevjob"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing previous/current job title'
+            })
+            
+        # Ensure the previous/current job title is not too long
+        elif len(request.form.get("prev")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Job Title too long'
+            })
+            
+        # Ensure the user entered a job title
+        elif not request.form.get("jobtitle"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target job title'
+            })
+        
+        # Ensure the job title is not too long
+        elif len(request.form.get("jobtitle")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Job Title too long'
+            })
+
+        # Ensure that the user entered an industry
+        elif not request.form.get("industry"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target industry'
+            })
+            
+        # Ensure the industry is not too long
+        elif len(request.form.get("industry")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Industry too long'
+            })
+        
+        # Ensure that the user entered a company
+        elif not request.form.get("company"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing target company'
+            })
+            
+        # Ensure the company name is not too long
+        elif len(request.form.get("company")) > 50:
+            return jsonify({
+                'status': 'error',
+                'message': 'Target Company too long'
+            })
+        
+        # Ensure that the user entered a job description
+        elif not request.form.get("jobdescription"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing job description'
+            })
+            
+        # Check if the job description is too short
+        elif len(request.form.get("jobdescription")) < 500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Job Description too short. Characters: {len(request.form.get("jobdescription"))} Minimum: 500'
+            })
+            
+        # Check that the job description is too long
+        elif len(request.form.get("jobdescription")) > 3500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 3500'
+            })
+        
+        # Ensure that the user entered a resume
+        elif not request.form.get("resume"):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing resume'
+            })
+        
+        # Check that the resume is long enough
+        elif len(request.form.get("resume")) < 1500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Resume too short. Characters: {len(request.form.get("resume"))} Minimum: 1500'
+            })
+            
+        # Check that the resume is short enough
+        elif len(request.form.get("resume")) > 4500:        
+            return jsonify({
+                'status': 'error',
+                'message': f'Resume too long. Characters: {len(request.form.get("resume"))} Limit: 4500'
+            })
+        
+        # Store resume if the user entered a resume
+        resume = request.form.get("resume")
+        
+        # Check which version of the cover letter the user wants
+        # if 
+        print(request.form.get("fullcoverletter"))
+        print(request.form.get("partialcoverletter"))
+        
+        return jsonify({
+            'status': 'error',
+            'message': 'TODO'
+        })
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("tailored_cover_letter.html")
+        # SELECT the user's resume from users
+        resume = (db.execute(
+            "SELECT resume FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["resume"]
+        return render_template("tailored_cover_letter.html", resume=resume)
