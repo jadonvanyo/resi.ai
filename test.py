@@ -371,7 +371,7 @@ print(price_estimation(api_key,price_estimate_inputs, price_estimate_outputs))
 # 1464
 # 1532
 
-tailor_cover_letter_prompt = f"""
+tailor_cover_letter_partial_prompt = f"""
     You are currently working as a {prevjob} and you're applying for this {title} at {company}. Based on the job description and resume provided below, please write an amazing cover letter for this job. Please write the cover letter using the following format:
 
     '''

@@ -14,7 +14,7 @@
         </p>
     </div>
 
-    <form action="/" id="coverletterForm" method="post">
+    <form action="/tailored_cover_letter" id="coverletterForm" method="post">
         
         <div class="mb-3 form-container">
             <label class="form-label" for="prevjob">Previous/Current Job Title</label>
@@ -33,7 +33,7 @@
 
         <div class="mb-3">
             <label for="jobarea" class="form-label">Copy and paste the target job description below</label>
-            <textarea class="form-control" id="jobarea" placeholder="Target job description" maxlength="3500" name="jobdescription" required rows="10"></textarea>
+            <textarea class="form-control" id="jobarea" placeholder="Target job description" maxlength="4000" name="jobdescription" required rows="10"></textarea>
         </div>
 
         <div class="mb-3">
@@ -43,11 +43,11 @@
 
         <!-- TODO: Add information circles that can be hovered over to show what each of these does -->
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="coverletter" id="fullcoverletter" value="option1" checked>
+            <input class="form-check-input" type="radio" name="coverletter" id="fullcoverletter" value="full" checked>
             <label class="form-check-label" for="fullcoverletter">Full Cover Letter</label>
         </div>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="coverletter" id="partialcoverletter" value="option2">
+            <input class="form-check-input" type="radio" name="coverletter" id="partialcoverletter" value="partial">
             <label class="form-check-label" for="partialcoverletter">Partial Cover Letter</label>
         </div>
 

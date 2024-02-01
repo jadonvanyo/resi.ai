@@ -97,10 +97,10 @@ def index():
             })
             
         # Check that the job description is too long
-        elif len(request.form.get("jobdescription")) > 3500:        
+        elif len(request.form.get("jobdescription")) > 4000:        
             return jsonify({
                 'status': 'error',
-                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 3500'
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4000'
             })
         
         # Ensure that the user entered a resume
@@ -563,7 +563,7 @@ def price_estimator():
             return apology("job description too short", 400)
         
         # Check that the job description is not too long
-        elif len(request.form.get("jobdescription")) > 3500:
+        elif len(request.form.get("jobdescription")) > 4000:
             return apology("job description too long", 400)
         
         # Ensure a resume was submitted
@@ -658,7 +658,7 @@ def tailored_cover_letter():
             })
             
         # Ensure the previous/current job title is not too long
-        elif len(request.form.get("prev")) > 50:
+        elif len(request.form.get("prevjob")) > 50:
             return jsonify({
                 'status': 'error',
                 'message': 'Target Job Title too long'
@@ -676,20 +676,6 @@ def tailored_cover_letter():
             return jsonify({
                 'status': 'error',
                 'message': 'Target Job Title too long'
-            })
-
-        # Ensure that the user entered an industry
-        elif not request.form.get("industry"):
-            return jsonify({
-                'status': 'error',
-                'message': 'Missing target industry'
-            })
-            
-        # Ensure the industry is not too long
-        elif len(request.form.get("industry")) > 50:
-            return jsonify({
-                'status': 'error',
-                'message': 'Target Industry too long'
             })
         
         # Ensure that the user entered a company
@@ -721,10 +707,10 @@ def tailored_cover_letter():
             })
             
         # Check that the job description is too long
-        elif len(request.form.get("jobdescription")) > 3500:        
+        elif len(request.form.get("jobdescription")) > 4000:        
             return jsonify({
                 'status': 'error',
-                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 3500'
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4000'
             })
         
         # Ensure that the user entered a resume
@@ -751,10 +737,12 @@ def tailored_cover_letter():
         # Store resume if the user entered a resume
         resume = request.form.get("resume")
         
-        # Check which version of the cover letter the user wants
-        # if 
-        print(request.form.get("fullcoverletter"))
-        print(request.form.get("partialcoverletter"))
+        # TODO: API call to create a full cover letter based on the user's inputs
+        # if request.form.get("coverletter") == "full":
+            # TODO: Run prompt if the user selected to generate a full resume
+        
+        # TODO: API call to create a full cover letter based on the user's inputs
+        # else:
         
         return jsonify({
             'status': 'error',
