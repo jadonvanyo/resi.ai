@@ -8,7 +8,7 @@ import markdown
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_cover_letter_full, get_tailored_cover_letter_partial, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
 
 # Configure application
 app = Flask(__name__)
@@ -737,16 +737,80 @@ def tailored_cover_letter():
         # Store resume if the user entered a resume
         resume = request.form.get("resume")
         
-        # TODO: API call to create a full cover letter based on the user's inputs
-        # if request.form.get("coverletter") == "full":
-            # TODO: Run prompt if the user selected to generate a full resume
+        # SELECT the user's encrypted API key from users
+        encrypted_api_key = (db.execute(
+            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
+        ))[0]["api_key"]
         
-        # TODO: API call to create a full cover letter based on the user's inputs
-        # else:
+        # Ensure the user has an API key
+        if not encrypted_api_key:
+            return jsonify({
+                'status': 'error',
+                'message': 'No API key saved'
+            })
         
+        # Check if the user wanted a full resume
+        if request.form.get("coverletter") == "full":
+            # API call to create a full cover letter based on the user's inputs
+            tailored_cover_letter = get_tailored_cover_letter_full(
+                decrypt_key(encrypted_api_key, get_fernet_instance()), 
+                request.form.get("company"), 
+                request.form.get("jobdescription"), 
+                request.form.get("jobtitle"), 
+                request.form.get("prevjob"), 
+                resume,
+            )
+            format = ' Full '
+        
+        # Else, assume the user wants a partial cover letter
+        else:
+            # API call to create a partial cover letter based on the user's inputs
+            tailored_cover_letter = get_tailored_cover_letter_partial(
+                decrypt_key(encrypted_api_key, get_fernet_instance()), 
+                request.form.get("company"), 
+                request.form.get("jobdescription"), 
+                request.form.get("jobtitle"), 
+                request.form.get("prevjob"), 
+                resume,
+            )
+            format = ' Partial '
+            
+        # Create name for the cover letter to be saved in the database
+        cover_letter_name = request.form.get("company") + " " + request.form.get("jobtitle") + format + "Cover Letter"
+        
+        # SELECT all saved resumes/cover letters to see if there is more than 4
+        if db.execute(
+            'SELECT COUNT(*) FROM history WHERE user_id = ?;',
+            session["user_id"]
+        )[0]['COUNT(*)'] > 4:
+            # If more than 4, UPDATE the oldest entry in history database with the newest entry
+            db.execute(
+                '''UPDATE history 
+                SET document_name = ?, company = ?, job_title = ?, document = ?, datetime = ?
+                WHERE user_id = ? AND datetime = (SELECT MIN(datetime) FROM history WHERE user_id = ?)
+                ''',
+                cover_letter_name, 
+                request.form.get("company"), 
+                request.form.get("jobtitle"), 
+                tailored_cover_letter, 
+                datetime.datetime.now(), 
+                session["user_id"],
+                session["user_id"]
+            )
+            
+        # If not past the 5 document limit, INSERT the data into history
+        else:
+            db.execute(
+                'INSERT INTO history (user_id, document_name, company, job_title, document, datetime) VALUES(?, ?, ?, ?, ?, ?);',
+                session["user_id"], cover_letter_name, request.form.get("company"), 
+                request.form.get("jobtitle"), tailored_cover_letter, datetime.datetime.now()
+            )
+        
+        # Return the tailored resume to update the page
         return jsonify({
-            'status': 'error',
-            'message': 'TODO'
+            'status': 'success',
+            'message': 'Resume processed successfully',
+            'tailored_cover_letter': render_template_string(markdown.markdown(tailored_cover_letter)),
         })
     
     # User reached route via GET (as by clicking a link or via redirect)

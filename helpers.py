@@ -170,8 +170,9 @@ def get_tailored_cover_letter_partial(api_key, company, jobdescription, jobtitle
         model="gpt-4-1106-preview",
         messages=[
             {"role": "user", "content": f"""
-             You are currently working as a {prevjob} and you're applying for this {jobtitle} at {company}. Based on the job description and resume provided below, please write an amazing cover letter for this job. Please write the cover letter using the following format:
+             You are currently working as a {prevjob} and you're applying for this {jobtitle} at {company}. Based on the job description and resume provided below. Please write an amazing cover letter for this job. Please write the cover letter using the format specified below.
 
+            Format:
              '''
              Introduction:
              A Hook: [Write one sentence that uniquely ties your interest or background to the company or industry. For example, a personal connection to the company’s product, mission, or a notable achievement of the company.]
