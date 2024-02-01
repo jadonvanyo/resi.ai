@@ -133,7 +133,32 @@ def get_differences(api_key, original_resume, tailored_resume, temp=1):
     )
     
     return completion.choices[0].message.content
+
+
+def get_tailored_cover_letter_full(api_key, company, jobdescription, jobtitle, prevjob, resume, temp=1):
+    """Generate a full tailored cover letter from OpenAI"""
+    # Save the user's OpenAI API Key for use in this function
+    openai.api_key = f"{api_key}"
     
+    # Completion for prompt for the full tailored cover letter
+    completion = openai.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=[
+            {"role": "user", "content": f"""
+             You are currently working as a {prevjob} and you're applying for this {jobtitle} at {company}. Based on the job description and resume provided below, please create an amazing cover letter for this job listing that effectively highlights how my background, skills, and experiences make me a perfect fit for this role. The cover letter should be professional, engaging, and tailored to your resume and the job requirements with an emphasis on how you can solve the key challenges that position and the company face.
+
+             Job Description: '''{jobdescription}'''
+
+             Resume: '''{resume}'''
+            """
+            },
+        ],
+        temperature = temp,
+        top_p = 0.75,
+    )
+    
+    return completion.choices[0].message.content
+
 
 def get_tailored_cover_letter_partial(api_key, company, jobdescription, jobtitle, prevjob, resume, temp=1):
     """Generate a partial tailored cover letter from OpenAI"""
