@@ -750,7 +750,7 @@ def tailored_cover_letter():
                 'message': 'No API key saved'
             })
         
-        # Check if the user wanted a full resume
+        # Check if the user wanted a full cover letter
         if request.form.get("coverletter") == "full":
             # API call to create a full cover letter based on the user's inputs
             tailored_cover_letter = get_tailored_cover_letter_full(

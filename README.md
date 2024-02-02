@@ -1,14 +1,17 @@
 # Resi.ai
-#### Video Demo:  <URL HERE>
+#### Video Demo:  <URL HERE> TODO
 ## Description:
+Resi.ai is a web application that allows a user to enter their resume and the job description for the job they wish to apply and the application will create a resume or cover letter tailored specifically for that job. This will give users the power to provide more quality applications for jobs in today's difficult job market.
+
 ### Problem:
 Applying for jobs has gotten noticeably more difficult over the past few years. More companies are using advanced AI technologies to quickly screen candidates for potential job openings, and job boards like Indeed and LinkedIn make it trivially easy to post a new job opening to thousands of people in seconds. Applying for a job now feels like a question of quantity rather than quality.
 
 ### Solution:
 This web application aims to give some of the power back to the job seekers by providing them with an easy to use tool to quickly create quality resumes customized to the job description leveraging the power of AI. All they will need is a working OpenAI API Key, an existing resume, and the job description. All of the prompting is handled by this program, so it is as easy as copying and pasting a resume and job description.
 
-### Pages:
 
+## File Breakdown
+### HTML Pages:
 #### Account:
 This page allows the user to update their email, password, OpenAI API key, and resume. Once saved in the database, the resume will autofill into any felids that require a resume to improve user experience. When the user clicks the update button, the website uses **A**synchronous **J**avaScript **A**nd **X**ML (**AJAX**) to send a request for the account function from the Flask backend. The Flask backend will determine whether to return an error or update the user's information in the resi.db database using SQLite, and dynamically update the webpage using AJAX to display an alert message below the submit button showing what was wrong or what was updated. The user's password will be hashed and OpenAI API Key will be encrypted for security any time they are updated on this page.
 
@@ -18,13 +21,15 @@ This is the page the user is redirected to after registering for the first time.
 #### Price Estimator:
 This feature allows the user to estimate how much a particular tailored resume will cost them. This page gives the user a text box to enter the job description and their resume (if they have already entered the resume in the Account, this will autofill). When the user clicks the "Get Price Estimate" button, the Flask backend will fill in the resume and job description to an example template of roughly what it would expect the input and output prompts to be and use OpenAI's API to count the number of tokens used. It then multiplies the number of tokens of the output and input by the current market rate, and renders a new template for the user displaying the expected price. The API call to count the tokens will only cost one token itself, making it a trivial cost.
 
+#### Tailored Cover Letter
+This feature allows the user to create a complete or partial cover letter for their target job. There are options to choose if the user wants a full or partial cover letter with information icons that display tooltips when hovered over. The user is prompted to enter their current/previous job title, target job title, target company, target job description, and an existing resume. When the user selects the "Submit Cover Letter" button, the website uses AJAX to update the web page to show a loading indicator and send a request for the `tailor_cover_letter` function from the Flask backend. The Flask backend will determine whether to return an error or use OpenAI's API to return a cover letter tailored to the user's inputs and dynamically update the page to display the tailored cover letter using JavaScript.
+
 #### Tailored Resumes:
 This is the main feature of this web application. This page gives the user all the fields that are required to create an expert resume writer to tailor their resume to their target job description. The user just needs to enter their target job title, target industry, target company, target job description, and an existing resume. When the user selects the "Submit Resume" button, the website uses AJAX to update the web page to show a loading indicator and send a request for the index function from the Flask backend. The Flask backend will determine whether to return an error or use OpenAI's API to return the 3 most important responsibilities of the job, a tailored resume, and a list of all the differences between the two and the page is dynamically updated again with all the information using JavaScript.
 
 #### History:
 This feature allows the user to view the last 5 documents that they have generated. The documents are pulled from the history table in the resi.db database and displayed in a collapsible accordion for easy viewing. The oldest document in the history is replaced whenever the user generates a new document in the index function. The old documents are displayed from newest to oldest and include the target job title, target company, document type, and when it was generated.
 
-## File Breakdown:
 ### app.py:
 This file contains all the necessary routes for the web application: index, about, account, api_key, history, login, logout, price_estimator, and register.
 
@@ -35,7 +40,7 @@ When accessed using "POST", this route will ensure the user entered a target job
 
 If all checks are passed, the function will use the users OpenAI API key and a the `get_imp_resp` function from helpers to get the 3 most important responsibilities from the job description. These responsibilities are then formatted into HTML using markdown. This process is repeated to get the tailored resume and differences between the tailored resume and new resume, but using the `get_tailored_resume` and `get_differences` functions from helpers.
 
-A resume name is then generated using the target company and target job title. This name, along with the target job title, target industry, target company, tailored resume, and date and time that the resume was generated, are stored in the history database for the user. If there are already 5 documents stored for that particular user, the oldest document is overwritten with the resume that has just been generated.
+A resume name is then generated using the target company and target job title. This name, along with the target job title, target company, tailored resume, and date and time that the resume was generated, are stored in the history database for the user. If there are already 5 documents stored for that particular user, the oldest document is overwritten with the resume that has just been generated.
 
 Finally, the HTML versions for the 3 most important responsibilities, tailored resume, and differences between the two resumes are sent to the JavaScript in the front end to dynamically insert into the web page.
 
@@ -93,6 +98,14 @@ If any errors are found, the user will be redirected to an apology page explaini
 
 When accessing this route using "GET" the page will render a template with the register input boxes.
 
+#### Tailor Cover Letter
+This route allows the user to create a partial or complete cover letter tailored to a job description.
+
+When accessed using "POST", the route will check that the user has entered a previous/current job title, target company, target job title, job description and resume that fall within certain length requirements. Next, it will lookup the user's OpenAI API Key in the database and determine whether the user wanted to generate a full or partial cover letter. If the user wanted a full cover letter, it will call the `get_tailored_cover_letter_full` function, and else, it will call the `get_tailored_cover_letter_partial`. 
+
+A cover letter name is then generated using the target company and target job title. This name, along with the target job title, target company, tailored cover letter, and date and time that the cover letter was generated, are stored in the history database for the user. If there are already 5 documents stored for that particular user, the oldest document is overwritten with the resume that has just been generated.
+
+Finally, the tailored cover letter is converted to HTML using the `markdown` function and sent to the JavaScript in the front end to dynamically insert into the web page.
 
 ### helper.py:
 This is the helper file where all helpful functions for app.py are stored. This file contains the following functions:
