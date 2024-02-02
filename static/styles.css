@@ -107,6 +107,7 @@ h1, p
 
 /* Class for displaying markdown resumes */
 .resume-display {
+    text-align: left;
     white-space: pre-line;
 }
 
@@ -176,6 +177,10 @@ label {
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+.text-left{
+    text-align: left;
 }
 
 /* Media query for mobile devices */

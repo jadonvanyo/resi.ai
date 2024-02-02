@@ -95,10 +95,10 @@ def index():
             })
             
         # Check that the job description is too long
-        elif len(request.form.get("jobdescription")) > 4000:        
+        elif len(request.form.get("jobdescription")) > 4500:        
             return jsonify({
                 'status': 'error',
-                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4000'
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4500'
             })
         
         # Ensure that the user entered a resume
@@ -235,7 +235,6 @@ def account():
                 'status': 'error',
                 'message': 'Must provide an Email.'
             })
-            # return apology("must provide email", 400)
         
         # Ensure an API key was submitted
         elif not request.form.get("user_api_key"):
@@ -243,7 +242,6 @@ def account():
                 'status': 'error',
                 'message': 'Must provide API Key.'
             })
-            # return apology("must provide API Key", 400)
         
         # Check if the user entered a new password
         elif request.form.get("password") or request.form.get("confirmation"):
@@ -253,7 +251,6 @@ def account():
                     'status': 'error',
                     'message': 'New password and confirmation must match.'
                 })
-                # return apology("new password and confirmation must match", 403)
             
             # SELECT the users hash from users
             old_hash = (db.execute(
@@ -266,7 +263,6 @@ def account():
                     'status': 'error',
                     'message': 'Password already in use.'
                 })
-                # return apology("password already in use", 403)
             
             # UPDATE the user's password in users if all checks pass
             db.execute(
@@ -312,7 +308,6 @@ def account():
                     'status': 'error',
                     'message': 'Must provide a valid API Key.'
                 })
-                # return apology("must provide a valid API Key", 400)
             
             # Update the users encrypted API key in the users database
             db.execute(
@@ -337,7 +332,6 @@ def account():
                     'status': 'error',
                     'message': 'Must provide a valid API Key.'
                 })
-                # return apology("must provide a valid API Key", 400)
             
             # Update the users encrypted API key in the users database
             db.execute(
@@ -352,10 +346,24 @@ def account():
             else:
                 success_response += ", API Key"
             
+        # Check if the resume field is empty
+        if not request.form.get("resume"):
+            # Redirect the user to the same page if no updates were made
+            if not success_response:
+                return redirect("/account")
+            # Send alert message to the user with all the updates made
+            else:
+                success_response += " successfully updated!"
+                return jsonify({
+                    'status': 'success',
+                    'message': success_response
+                })
+                
         # Check if the user entered a resume
-        if request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
+        elif request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
                                           session["user_id"]))[0]["resume"]:
             # Check that the user entered a sufficiently long resume
+            print(request.form.get("resume"))
             if len(request.form.get("resume")) < 1500:
                 return jsonify({
                     'status': 'error',
@@ -386,7 +394,6 @@ def account():
                 'status': 'success',
                 'message': success_response
             })
-        # return redirect("/account")
     
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -408,6 +415,12 @@ def account():
             return render_template("account.html", email=email, user_api_key="", resume=resume)
             
         else:
+            # Check if the user has a resume entered yet
+            if not db.execute("SELECT resume FROM users WHERE id = ?", 
+                                          session["user_id"])[0]["resume"]:
+                # If no resume is saved in the system, render the template without a resume
+                return render_template("account.html", email=email, user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()))
+                                       
             # Return the account page with all the required information added
             return render_template("account.html", email=email, user_api_key=decrypt_key(encrypted_api_key, get_fernet_instance()), resume=resume)
 
@@ -654,10 +667,10 @@ def tailored_cover_letter():
             })
             
         # Check that the job description is too long
-        elif len(request.form.get("jobdescription")) > 4000:        
+        elif len(request.form.get("jobdescription")) > 4500:        
             return jsonify({
                 'status': 'error',
-                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4000'
+                'message': f'Job Description too long. Characters: {len(request.form.get("jobdescription"))} Limit: 4500'
             })
         
         # Ensure that the user entered a resume
