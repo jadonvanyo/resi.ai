@@ -9,7 +9,8 @@ Applying for jobs has gotten noticeably more difficult over the past few years. 
 ### Solution:
 This web application aims to give some of the power back to the job seekers by providing them with an easy to use tool to quickly create quality resumes customized to the job description leveraging the power of AI. All they will need is a working OpenAI API Key, an existing resume, and the job description. All of the prompting is handled by this program, so it is as easy as copying and pasting a resume and job description.
 
-## TODO: How to Get Started
+## How to Get Started
+More information coming soon!
 
 ## File Breakdown
 ### HTML Pages:
@@ -18,9 +19,6 @@ This page allows the user to update their email, password, OpenAI API key, and r
 
 #### Enter API:
 This is the page the user is redirected to after registering for the first time. The webpage will give the user a explanation on how to set up their OpenAI API key and at the bottom of the page, it provides the user an input box to enter the API key they have generated. If the user clicks the "Enter API Key" button, the website will send a request for the api_key function from the Flask backend. The Flask backend will determine whether to return an error or encrypt and update the user's OpenAI API Key in the resi.db database with the encrypted key, and dynamically update the webpage using AJAX to display an alert message below the submit button showing what was wrong or that the API Key was successfully updated. The user can update their API Key at any time from this page.
-
-#### Price Estimator:
-This feature allows the user to estimate how much a particular tailored resume will cost them. This page gives the user a text box to enter the job description and their resume (if they have already entered the resume in the Account, this will autofill). When the user clicks the "Get Price Estimate" button, the Flask backend will fill in the resume and job description to an example template of roughly what it would expect the input and output prompts to be and use OpenAI's API to count the number of tokens used. It then multiplies the number of tokens of the output and input by the current market rate, and renders a new template for the user displaying the expected price. The API call to count the tokens will only cost one token itself, making it a trivial cost.
 
 #### Tailored Cover Letter
 This feature allows the user to create a complete or partial cover letter for their target job. There are options to choose if the user wants a full or partial cover letter with information icons that display tooltips when hovered over. The user is prompted to enter their current/previous job title, target job title, target company, target job description, and an existing resume. When the user selects the "Submit Cover Letter" button, the website uses AJAX to update the web page to show a loading indicator and send a request for the `tailor_cover_letter` function from the Flask backend. The Flask backend will determine whether to return an error or use OpenAI's API to return a cover letter tailored to the user's inputs and dynamically update the page to display the tailored cover letter using JavaScript.
@@ -32,7 +30,7 @@ This is the main feature of this web application. This page gives the user all t
 This feature allows the user to view the last 5 documents that they have generated. The documents are pulled from the history table in the resi.db database and displayed in a collapsible accordion for easy viewing. The oldest document in the history is replaced whenever the user generates a new document in the index function. The old documents are displayed from newest to oldest and include the target job title, target company, document type, and when it was generated.
 
 ### app.py:
-This file contains all the necessary routes for the web application: index, about, account, api_key, history, login, logout, price_estimator, and register.
+This file contains all the necessary routes for the web application: index, about, account, api_key, history, login, logout, register, and tailored_cover_letter.
 
 #### Index:
 This route handles the main feature of this web application: Tailoring the user's resume to a job description. 
@@ -82,13 +80,6 @@ When accessing this route using "GET" the page will render a template with the l
 
 #### Logout:
 This route will logout the user by clearing their session and redirecting them to the login page.
-
-#### Price Estimator:
-This route will take the job description and user's resume and determine a rough estimate of how much it would cost to generate a tailored resume.
-
-When accessed using "POST", the route will check that the user has entered a job description and resume that fall within certain length requirements. Next, it will lookup the user's OpenAI API Key in the database and use the `price_estimator_prompts` function to get example input and output prompts for estimation. These prompts are then fed into the `price_estimation` with the OpenAI API Key and a new page is rendered with the estimate price.
-
-When accessing this route using "GET" the page will render a template with input boxes for the job description and resume.  The resume input will autofill if a resume is saved in the system.
 
 #### Register:
 This route allows the user to register using an email and password.
@@ -164,16 +155,6 @@ The function will take the an OpenAI `api_key`, `company`, `imp_resp`, `industry
 #### login_required
 This function will decorate any routes that require login. If the user is not logged in, they will be redirected to the login route.
 
-#### price_estimator_prompts
-This function takes a job description and resume and creates example input and output prompts that it would expect from tailoring a resume.
-
-The function will take a `jobdescription` and `resume` and generate two dictionaries: price_estimate_inputs and price_estimate_outputs. These dictionaries will contain the inputs and estimated outputs of the model to determine how many tokens the user is likely going to use.
-
-#### price_estimation
-This function takes an OpenAI API Key and a dictionary of potential inputs and outputs for tailoring a resume and returns the expected price of that API call.
-
-The function will take an OpenAI `user_api_key`, `price_estimate_inputs` and `price_estimate_outputs` and makes an API call to OpenAI with a max token response limit of 1 token. From this response, the function pulls the token count for the inputs and outputs using the gpt-4-1106-preview model and multiples the toke count for each by the price per 1k tokens for the gpt-4-1106-preview model and returns the sum.
-
 #### usd
 This function will format a value into United State's dollars.
 
@@ -217,6 +198,14 @@ There is room for additional improvements on the models with improved prompting 
 The prompts used to generate the resumes were derived from the following YouTube video by Jeff Su: [Land a Job using ChatGPT: The Definitive Guide!](https://www.youtube.com/watch?v=pmnY5V16GSE&t=317s). The prompts were adjusted to fit the adjustable needs of this project.
 
 The prompts have been designed to replicate how a sample conversation would go with ChatGPT, while having room to be customized to the user's particular situation.
+
+### Scraped Features:
+This section contains any features that have been cut for the time being and descriptions of why the feature was scraped.
+
+#### Price Estimator:
+This feature would have given the user a price estimate on how much it would cost them in their OpenAI API account to generate a tailored resume or cover letter.
+
+This feature was scrapped due to its inaccuracy and lack of usefulness after a few uses. Once a user has generated a few resumes, the price remains pretty consistent, making this a low to no value feature. Additionally, the price to generate even the largest resumes is around $0.20, so the user is not at risk of spending too much money too quickly.
 
 ### Security:
 Security was a major concern on this project. The goal was for the project to be secure while also openly accessible for open source.

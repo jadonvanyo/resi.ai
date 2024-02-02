@@ -6,7 +6,7 @@ import markdown
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_cover_letter_full, get_tailored_cover_letter_partial, get_tailored_resume, login_required, price_estimation, price_estimator_prompts, usd
+from helpers import api_key_validation, apology, decrypt_key, encrypt_key, get_differences, get_fernet_instance, get_imp_resp, get_tailored_cover_letter_full, get_tailored_cover_letter_partial, get_tailored_resume, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -537,67 +537,6 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
-
-
-# TODO: Eliminate this section
-@app.route("/price_estimator", methods=["GET", "POST"])
-@login_required
-def price_estimator():
-    """Allow the user to estimate how much it will cost to generate a resume"""
-    # TODO: Try to figure out why this is so off
-    # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        # Ensure a job description was entered
-        if not request.form.get("jobdescription"):
-            return apology("must provide job description", 400)
-        
-        # Check that the job description is long enough
-        elif len(request.form.get("jobdescription")) < 500:
-            return apology("job description too short", 400)
-        
-        # Check that the job description is not too long
-        elif len(request.form.get("jobdescription")) > 4000:
-            return apology("job description too long", 400)
-        
-        # Ensure a resume was submitted
-        elif not request.form.get("resume"):
-            return apology("must provide a resume", 400)
-        
-        # Check that the resume is long enough
-        elif len(request.form.get("resume")) < 1500:
-            return apology("resume too short", 400)
-            
-        # Check that the resume is not too long
-        elif len(request.form.get("resume")) > 4500:
-            return apology("resume too long", 400)
-            
-        # SELECT the user's encrypted API key from users
-        encrypted_api_key = (db.execute(
-            "SELECT api_key FROM users WHERE id = ?;", session["user_id"]
-        ))[0]["api_key"]
-        
-        # Ensure the user has entered an API key
-        if not encrypted_api_key:
-            return apology("no saved api key", 400)
-        
-        # Call function to create the example prompts required a tailor the resume
-        price_estimate_inputs, price_estimate_outputs = price_estimator_prompts(
-            request.form.get("jobdescription"), request.form.get("resume"))
-        
-        # Calculate the price needed for the total prompt
-        total_cost = price_estimation(decrypt_key(encrypted_api_key, get_fernet_instance()),
-                                      price_estimate_inputs, price_estimate_outputs)
-        
-        # Return template with the price estimate
-        return render_template("price_estimate.html", total_cost=total_cost)
-    
-    # User reached route via GET (as by clicking a link or via redirect)
-    else:
-        # SELECT the user's resume from users
-        resume = (db.execute(
-            "SELECT resume FROM users WHERE id = ?;", session["user_id"]
-        ))[0]["resume"]
-        return render_template("price_estimator.html", resume=resume)
 
 
 @app.route("/register", methods=["GET", "POST"])
