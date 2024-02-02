@@ -1,5 +1,3 @@
-# import os
-
 from cs50 import SQL
 import datetime
 from flask import Flask, jsonify, redirect, render_template, render_template_string, request, session
