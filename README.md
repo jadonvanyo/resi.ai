@@ -145,6 +145,16 @@ This function will use OpenAI's API to generate a table of the differences betwe
 
 The function will take the an OpenAI `api_key`, `original_resume`, `tailored_resume`, and `temp` that is automatically set to 1 for a more creative response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown for the differences between the original and tailored resume. This function uses the gpt-4-1106-preview model for increased accuracy and reliability in responses. The top_p is set to 0.9 to cut down some of the responses that the model considers to improve speed marginally.
 
+#### get_tailored_cover_letter_full
+This function will use OpenAI's API to generate a complete tailored cover letter from the user's input.
+
+The function will take the an OpenAI `api_key`, `company`, `jobdescription`, `jobtitle`, `prevjob`, `resume`, and `temp` that is automatically set to 1 for a more creative response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown for a cover letter tailored to a specific job description. The entered information is used to improve the prompt for the model to improve the response for the user. This function uses the gpt-4-1106-preview model for increased accuracy and reliability in responses. The top_p is set to 0.75 to cut down some of the responses that the model considers to improve speed marginally.
+
+#### get_tailored_cover_letter_partial
+This function will use OpenAI's API to generate a few key sentences to help the user create a tailored cover letter to the job description.
+
+The function will take the an OpenAI `api_key`, `company`, `jobdescription`, `jobtitle`, `prevjob`, `resume`, and `temp` that is automatically set to 1 for a more creative response. Using this information, the function will enter the required information into the prompts that will be sent to OpenAI's model and will return the model's response in markdown for a few key sentences for a cover letter tailored to a specific job description. The entered information is used to improve the prompt for the model to improve the response for the user. This function uses the gpt-4-1106-preview model for increased accuracy and reliability in responses. The top_p is set to 0.75 to cut down some of the responses that the model considers to improve speed marginally.
+
 #### get_tailored_resume
 This function will use OpenAI's API to generate a tailored resume based on the user's input information and previous OpenAI generations.
 
