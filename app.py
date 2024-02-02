@@ -279,6 +279,13 @@ def account():
         
         # Check if the user has entered an email that is different than their previous email
         if request.form.get("email") != (db.execute("SELECT email FROM users WHERE id = ?", session["user_id"]))[0]["email"]:
+            # Ensure that the email entered a valid email
+            if "@" not in request.form.get("email") or "." not in request.form.get("email"):
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Must provide a valid email.'
+                })
+            
             # UPDATE the user's email in users
             db.execute(
                 "UPDATE users SET email = ? WHERE id = ?;",
@@ -501,6 +508,10 @@ def login():
         # Ensure email was submitted
         if not request.form.get("email"):
             return apology("must provide email", 403)
+        
+        # Ensure that the email entered a valid email
+        elif "@" not in request.form.get("email") or "." not in request.form.get("email"):
+            return apology("must provide a valid email", 400)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
@@ -547,6 +558,10 @@ def register():
         # Ensure email was submitted
         if not request.form.get("email"):
             return apology("must provide email", 400)
+        
+        # Ensure that the email entered a valid email
+        elif "@" not in request.form.get("email") or "." not in request.form.get("email"):
+            return apology("must provide a valid email", 400)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
