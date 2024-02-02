@@ -141,9 +141,6 @@ def index():
         imp_resp = get_imp_resp(decrypt_key(encrypted_api_key, get_fernet_instance()),
                                 request.form.get("industry"), request.form.get("jobdescription"))
         
-        # Add title to the section and convert important responsibilities to HTML using markdown
-        imp_resp_html = "<h2>Important Responsibilities</h2>" + markdown.markdown(imp_resp)
-        
         # API call to get tailored resume from user information
         tailored_resume = get_tailored_resume(
             decrypt_key(encrypted_api_key, get_fernet_instance()), 
@@ -155,9 +152,6 @@ def index():
             resume
         )
         
-        # Format the tailored resume for HTML
-        tailored_resume_html = "<h2>Tailored Resume</h2>" + tailored_resume
-        
         # API call to get the differences comparison between old and new resumes
         differences = get_differences(decrypt_key(encrypted_api_key, get_fernet_instance()), resume, tailored_resume)
         
@@ -167,8 +161,8 @@ def index():
         # Add stripped table formatting to the table
         differences_html = re.sub(r'<table>', '<table class="table table-striped">', differences_html)
         
-        # Add bold column headers to the table and a title for the section
-        differences_html = "<h2>Differences</h2>" + re.sub(r'<th>', '<th scope="col">', differences_html)
+        # Add bold column headers to the table
+        differences_html = re.sub(r'<th>', '<th scope="col">', differences_html)
         
         # Create name for the resume to be saved in the database
         resume_name = request.form.get("company") + " " + request.form.get("jobtitle") + " Resume"
@@ -205,8 +199,8 @@ def index():
         return jsonify({
             'status': 'success',
             'message': 'Resume processed successfully',
-            'imp_resp': render_template_string(imp_resp_html),
-            'tailored_resume': render_template_string(tailored_resume_html),
+            'imp_resp': render_template_string(markdown.markdown(imp_resp)),
+            'tailored_resume': render_template_string(tailored_resume),
             'differences': render_template_string(differences_html)
         })
         
