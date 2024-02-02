@@ -1,5 +1,5 @@
 # Resi.ai
-#### Video Demo: <URL HERE> TODO
+#### Video Demo: [Video Demo](https://youtu.be/K7PYrwhXaPg)
 ## Description:
 Resi.ai is a web application that allows a user to enter their resume and the job description for the job they wish to apply and the application will create a resume or cover letter tailored specifically for that job. This will give users the power to provide more quality applications for jobs in today's difficult job market.
 

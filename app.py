@@ -363,7 +363,6 @@ def account():
         elif request.form.get("resume") != (db.execute("SELECT resume FROM users WHERE id = ?", 
                                           session["user_id"]))[0]["resume"]:
             # Check that the user entered a sufficiently long resume
-            print(request.form.get("resume"))
             if len(request.form.get("resume")) < 1500:
                 return jsonify({
                     'status': 'error',
