@@ -1,6 +1,6 @@
 Python==3.12.1
 gunicorn==21.2.0
-psycopg2
+psycopg2-binary==2.9.9
 cryptography==41.0.7
 cs50==9.3.4
 Flask==3.0.0
