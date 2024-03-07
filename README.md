@@ -1,16 +1,121 @@
 # Resi.ai
-#### Video Demo: [Video Demo](https://youtu.be/K7PYrwhXaPg)
-## Description:
-Resi.ai is a web application that allows a user to enter their resume and the job description for the job they wish to apply and the application will create a resume or cover letter tailored specifically for that job. This will give users the power to provide more quality applications for jobs in today's difficult job market.
 
+Resi.ai is a web application that allows a user to enter their resume and the job description for the job they wish to apply and the application will create a resume or cover letter tailored specifically for that job. This will give users the power to provide more quality applications for jobs in today's difficult job market. See the [Video Demo](https://youtu.be/K7PYrwhXaPg) for a quick demo on how to use this project. The project is available at [www.useresi.com](https://www.useresi.com/register)
+
+## Table of Contents
+- [Background](#background)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [File Breakdown](#file-breakdown)
+- [Design Decisions](#design-decisions) 
+- [Contributing](#contributing)
+- [Credits](#credits)
+- [License](#license)
+
+## Background
 ### Problem:
 Applying for jobs has gotten noticeably more difficult over the past few years. More companies are using advanced AI technologies to quickly screen candidates for potential job openings, and job boards like Indeed and LinkedIn make it trivially easy to post a new job opening to thousands of people in seconds. Applying for a job now feels like a question of quantity rather than quality.
 
 ### Solution:
 This web application aims to give some of the power back to the job seekers by providing them with an easy to use tool to quickly create quality resumes customized to the job description leveraging the power of AI. All they will need is a working OpenAI API Key, an existing resume, and the job description. All of the prompting is handled by this program, so it is as easy as copying and pasting a resume and job description.
 
-## How to Get Started
-More information coming soon!
+## Dependencies
+This project requires the following Python libraries and packages. Ensure you have them installed to run the project successfully:
+
+- `cs50`: For connecting the SQLite database to the Application Configuration.
+- `cryptography`: For encryption of user's data before storage in the database.
+- `flask`: For lightweight web application framework.
+- `flask_session`: For support for sever-side sessions maintaining state and store data across different requests.
+- `functools`: For providing utilities for caching, cumulative operations, and partial functions.
+- `markdown`: For converting markdown language to HTML for display on website.
+- `openai`: For access to OpenAI's Artificial Intelligence models.
+- `os`: For retrieving environment variables for the database.
+- `re`: For performing pattern matching and substitution on strings using regular expressions
+- `werkzeug`: For salting passwords before they are stored in the database for security.
+
+You can use the following pip command to install the required Python packages from the `requirements.txt` file:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Installation
+This project is active and accessible at [useresi.com](https://www.useresi.com/register).
+
+If you wish to run this project on your local machine, follow the steps below:
+
+### Local Installation
+This project is built using Python and requires a Python environment to run. Follow these steps to set up and run the project on your local machine.
+
+#### Prerequisites
+- Python 3.7 or newer
+- pip (Python package installer)
+
+#### Clone the repository
+First, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/jadonvanyo/resi.ai.git
+cd resi.ai
+```
+
+#### Setup Python Virtual Environment
+It's recommended to use a virtual environment for Python projects to manage dependencies. Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+# On Windows
+venv\Scripts\activate
+# On MacOS/Linux
+source venv/bin/activate
+```
+
+#### Install Dependencies
+Install the required Python libraries mentioned in the [Dependencies](#dependencies) section from the `requirements.txt` file using pip:
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Final Steps
+After completing the above steps, you should be ready to use the project. Proceed to the [Usage](#usage) section for instructions on running the project and analyzing potential investment properties.
+
+## Usage
+This project is active and accessible at [useresi.com](https://www.useresi.com/register).
+
+If you wish to run this on your local machine, follow the steps below:
+
+### Local Usage
+1. Navigate to the resi.ai directory if you are not already there:
+
+```bash
+cd resi.ai
+```
+2. Next, open `app.py` and replace the following code:
+```python
+uri = os.getenv("DATABASE_URL")
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://")
+db = SQL(uri)
+```
+with
+```python
+db = SQL("sqlite:///resi.db")
+```
+Save `app.py`.
+
+3. Run the flask application in the command line:
+```bash
+flask run
+```
+
+4. Hold the `cmd` key and click the 'http://127.0.0.1:5000' link in the terminal window to access the application in your preferred browser.
+
+5. Use the web application based on the prompts given within the application.
+
+## Features
 
 ## File Breakdown
 ### HTML Pages:
@@ -182,7 +287,7 @@ The history table stores the following information:
 Note: Only the 5 most recent documents are stored to prevent the database from being overcrowded with too many documents.
 
 
-## Design Decisions:
+## Design Decisions
 ### Models:
 This web application uses OpenAI's gpt-3.5-turbo-1106 and gpt-4-1106-preview models. The GPT-3.5 Turbo model is used to generate the 3 most important responsibilities from the job description. This model showed consistent and accurate results for generating the 3 most important responsibilities similar to GPT-4 Turbo, but it was able to do so quicker and cheaper than GPT-4, so it was chosen for the initial task of finding the three most important responsibilities in the job description.
 
@@ -215,3 +320,12 @@ This was accomplished using hashes for the user's passwords so any database leak
 All inputs into the databases are also sanitized to protect against injection attacks.
 
 Improvements could have been made to make the sections that are being given access to the AI safer. Character limits were implemented to deter user's from accidentally entering information and prevent them from adding too much information and overloading the context window of the model
+
+## Contributing
+
+## Credits
+This project uses the same base structure as Harvard's C$50 Finance project. See [C$50 Finance](https://cs50.harvard.edu/college/2023/fall/psets/9/finance/) for full details.
+
+The prompts used to generate the resumes were derived from the following YouTube video by Jeff Su: [Land a Job using ChatGPT: The Definitive Guide!](https://www.youtube.com/watch?v=pmnY5V16GSE&t=317s). The prompts were adjusted to fit the adjustable needs of this project.
+
+## License
