@@ -1,6 +1,6 @@
-# Resi.ai
+# resi.ai
 
-Resi.ai is a web application that allows a user to enter their resume and the job description for the job they wish to apply and the application will create a resume or cover letter tailored specifically for that job. This will give users the power to provide more quality applications for jobs in today's difficult job market. See the [Video Demo](https://youtu.be/K7PYrwhXaPg) for a quick demo on how to use this project. The project is available at [www.useresi.com](https://www.useresi.com/register)
+Resi.ai is a cutting-edge flask web application designed to revolutionize the way professionals approach job applications. By leveraging the power of OpenAI's API, resi.ai provides personalized and automated assistance for creating tailored resumes and cover letters, making job applications more efficient and effective. See the [Video Demo](https://youtu.be/K7PYrwhXaPg) for a quick demo on how to use this project. The project is available at [www.useresi.com](https://www.useresi.com/register)
 
 ## Table of Contents
 - [Background](#background)
@@ -33,7 +33,7 @@ This project requires the following Python libraries and packages. Ensure you ha
 - `openai`: For access to OpenAI's Artificial Intelligence models.
 - `os`: For retrieving environment variables for the database.
 - `re`: For performing pattern matching and substitution on strings using regular expressions
-- `werkzeug`: For salting passwords before they are stored in the database for security.
+- `werkzeug`: For hashing passwords before they are stored in the database for security.
 
 You can use the following pip command to install the required Python packages from the `requirements.txt` file:
 
@@ -116,6 +116,25 @@ flask run
 5. Use the web application based on the prompts given within the application.
 
 ## Features
+resi.ai tailors resumes and cover letters to fit a specific job description. Here are the key features that make resi.ai stand out:
+
+### Tailored Resumes
+Create expertly tailored resumes that are specifically optimized for a target job description. Simply input your target job title, industry, company, and job description, along with your existing resume, and let resi.ai generate a resume that highlights the most relevant experiences and skills for your desired role. The application uses OpenAI's API to identify and include the 3 most important job responsibilities in your tailored resume, ensuring your application stands out to potential employers.
+
+### Dynamic Account Management
+Easily manage your account settings including email, password, and OpenAI API key. Your resume is securely stored and autofilled in relevant fields to save you time. Updates to your account are made in real time using AJAX, ensuring a seamless user experience without the need for page reloads.
+
+### Enter API Key
+For new users, resi.ai offers a straightforward guide on how to set up your OpenAI API key. Enter your key through a user-friendly interface to start leveraging the power of AI in crafting your job application documents.
+
+### Tailored Cover Letters
+Generate ideas for your cover letter or complete cover letters tailored to your application. Specify details such as your current/previous job title, target job title, target company, and job description. resi.ai utilizes AJAX to deliver your custom cover letter, tailored using the OpenAI API to match your job application needs.
+
+### Document History
+Track your last 5 generated documents with ease. resi.ai stores your documents in a history table, allowing you to access and review them anytime. This feature is particularly useful for managing multiple job applications and ensuring consistency across your documents.
+
+### Security and Privacy
+resi.ai takes your privacy and security seriously. Passwords are hashed, and OpenAI API keys are encrypted before being stored in the database, ensuring your sensitive information is protected.
 
 ## File Breakdown
 ### HTML Pages:
@@ -284,8 +303,7 @@ The history table stores the following information:
 - document: text input to store the document that the user created
 - datetime: text input to store when the document was created
 
-Note: Only the 5 most recent documents are stored to prevent the database from being overcrowded with too many documents.
-
+> Note: Only the 5 most recent documents are stored to prevent the database from being overcrowded with too many documents.
 
 ## Design Decisions
 ### Models:
@@ -322,10 +340,29 @@ All inputs into the databases are also sanitized to protect against injection at
 Improvements could have been made to make the sections that are being given access to the AI safer. Character limits were implemented to deter user's from accidentally entering information and prevent them from adding too much information and overloading the context window of the model
 
 ## Contributing
+Thank you for your interest in contributing to this project! Contributions are welcome from anyone who wishes to improve or expand the project.
+
+Here are some ways you can contribute:
+
+- **Reporting bugs:** If you find a bug, please open an issue detailing the problem, how to reproduce it, and any other relevant information.
+- **Suggesting enhancements:** Have an idea for a new feature or think something could be improved? Open an issue to suggest your enhancement.
+- **Submitting pull requests:** Feel free to fork the repository and submit pull requests with your changes or additions. Whether it's fixing a typo, addressing an issue, or adding a new feature, all contributions are appreciated.
+
+### How to Contribute
+1. Fork the repository on GitHub.
+2. Clone your fork to your local machine (`git clone YOUR_FORK`).
+3. Create your Branch for changes (`git checkout -b YOUR_CHANGES`).
+4. Make your changes and commit them with clear, descriptive messages (`git commit -m 'Detailed description of your amazing changes'`).
+5. Push to the Branch (`git push origin YOUR_CHANGES`)
+6. Submit a pull request against the main branch of this repository.
+7. Wait for feedback or approval from the project maintainers.
 
 ## Credits
-This project uses the same base structure as Harvard's C$50 Finance project. See [C$50 Finance](https://cs50.harvard.edu/college/2023/fall/psets/9/finance/) for full details.
+This project was developed by Jadon Vanyo. Special thanks to the following resources for guidance and inspiration:
 
-The prompts used to generate the resumes were derived from the following YouTube video by Jeff Su: [Land a Job using ChatGPT: The Definitive Guide!](https://www.youtube.com/watch?v=pmnY5V16GSE&t=317s). The prompts were adjusted to fit the adjustable needs of this project.
+- This project uses the same base structure as Harvard's C$50 Finance project. See [C$50 Finance](https://cs50.harvard.edu/college/2023/fall/psets/9/finance/) for full details.
+- Additional credit to CS50's documentation for outlining how to set up a flask application in Heroku. See [CS50 Docs](https://cs50.readthedocs.io/heroku/) for full details.
+- The prompts used to generate the resumes were derived from the following YouTube video by Jeff Su: [Land a Job using ChatGPT: The Definitive Guide!](https://www.youtube.com/watch?v=pmnY5V16GSE&t=317s). The prompts were adjusted to fit the adjustable needs of this project.
 
 ## License
+Distributed under the MIT License. See LICENSE for more information.
